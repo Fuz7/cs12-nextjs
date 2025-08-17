@@ -7,7 +7,6 @@ import {
   BarChart3,
   Briefcase,
   TrendingUpDown,
-  PhilippinePeso,
   Wallet,
 } from "lucide-react";
 import Image from "next/image";
@@ -17,10 +16,8 @@ import {
   SidebarContent,
   SidebarHeader,
   SidebarRail,
-  SidebarFooter,
 } from "@/components/ui/sidebar";
-import { Button } from "@/components/ui/button";
-import { NavUser } from "./nav-user";
+
 import Link from "next/link";
 import websiteIcon from "@/resources/images/websiteIcon.svg";
 
@@ -175,9 +172,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarContent>
       <SidebarRail />
-      <SidebarFooter>
+      {/* <SidebarFooter>
         <NavUser />
-      </SidebarFooter>
+      </SidebarFooter> */}
     </Sidebar>
   );
 }
