@@ -108,3 +108,20 @@ export async function getCustomerById(
     status: "success",
   });
 }
+
+export async function searchCustomer(
+  id: number
+): Promise<JsonResponse<Customer | object>> {
+  const res = await axios.get(`/api/customers/${id}/search`, {});
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: {},
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}

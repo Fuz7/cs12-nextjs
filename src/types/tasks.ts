@@ -1,9 +1,9 @@
-
-export interface Task extends Record<string, unknown> {
+export type Task = {
   id: number;
-  taskable_id:string,
-  taskable_type:string,
+  taskable_id: string;
+  taskable_type: string;
   description: string;
-  price?: number;
-  tasks:[]
-}
+  price: number | string;
+};
+
+export type TaskFillable = Pick<Task, "description" | "price">;

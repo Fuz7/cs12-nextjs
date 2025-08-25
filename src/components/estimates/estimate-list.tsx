@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { Phone, Mail, Edit, Trash2, UserCheck, Building } from "lucide-react";
 import { Lead } from "@/types/leads";
 import { LEAD_STATUSES } from "@/types/leads";
-import { AddLeadForm, EditLeadForm } from "./index";
 import {
   DataTableV2,
   type DataTableColumn,
@@ -13,33 +12,45 @@ import {
 } from "@/components/ui/data-table-v2";
 import { Badge } from "@/components/ui/badge";
 import { useLeads } from "@/hooks/useLeads";
+import { useEstimates } from "@/hooks/useEstimates";
+import { Estimate, ESTIMATE_STATUSES } from "@/types/estimates";
+import Link from "next/link";
+import AddEstimateCustomerIdForm from "./search-customer-form";
+import SearchCustomerForm from "./search-customer-form";
+import { Customer } from "@/types/database";
+import { AddEstimateForm } from "./add-estimate-form";
+import { wait } from "@/utils/promise";
 
-export function LeadsList() {
+export function EstimatesList() {
   const {
-    leads,
+    estimate,
     currentPage,
     setCurrentPage,
     sortConfig,
     searchTerm,
     setSearchTerm,
     loading,
-    refreshLeads,
+    refreshEstimates,
     setPerPage,
     setSortConfig,
     perPage,
     totalCount,
-  } = useLeads();
-
-  const [isAddLeadOpen, setIsAddLeadOpen] = useState(false);
-  const [isEditLeadOpen, setIsEditLeadOpen] = useState<Lead | false>(false);
-  const [isDeleteLeadOpen, setIsDeleteLeadOpen] = useState<Lead | false>(false);
-  const [isConvertLeadOpen, setIsConvertLeadOpen] = useState<Lead | false>(
+  } = useEstimates();
+  console.log(estimate);
+  const [isAddConfirmationOpen, setIsAddConfirmationOpen] = useState(false);
+  const [isAddEstimateOpen, setIsAddEstimateOpen] = useState<Customer | false>(
     false
   );
+  const [isEditEstimateOpen, setIsEditEstimateOpen] = useState<
+    Estimate | false
+  >(false);
+  const [isDeleteEstimateOpen, setIsDeleteEstimateOpen] = useState<
+    Estimate | false
+  >(false);
 
   // Get status badge component
   const getStatusBadge = (status: string) => {
-    const statusConfig = LEAD_STATUSES.find((s) => s.value === status);
+    const statusConfig = ESTIMATE_STATUSES.find((s) => s.value === status);
     if (!statusConfig) return <Badge variant="secondary">{status}</Badge>;
 
     return (
@@ -50,44 +61,41 @@ export function LeadsList() {
   };
 
   // Column configuration for DataTableV2
-  const columns: DataTableColumn<Lead>[] = [
+  const columns: DataTableColumn<Estimate>[] = [
     {
-      key: "first_name",
+      key: "customer_id",
+      label: "Customer ID",
+      sortable: true,
+      render: (value: unknown, estimate: Estimate) => (
+        <div className="flex flex-col gap-1">{estimate.customer?.id}</div>
+      ),
+    },
+    {
+      key: "customer_first_name",
       label: "Name",
       sortable: true,
-      render: (value: unknown, lead: Lead) => (
+      render: (value: unknown, estimate: Estimate) => (
         <div>
-          <p className="font-medium">
-            {lead.first_name + " " + lead.last_name}
-          </p>
-          {lead.company && (
-            <div className="text-sm text-muted-foreground flex items-center gap-1">
-              <Building className="h-3 w-3" />
-              {lead.company}
+          <Link
+            href={`dashboard/customers/${estimate.customer?.id}`}
+            className="font-medium"
+          >
+            {estimate.customer.first_name + " " + estimate.customer.last_name}
+          </Link>
+          {estimate.customer.email && (
+            <div className="text-sm text-muted-foreground ">
+              {estimate.customer.email}
             </div>
           )}
         </div>
       ),
     },
     {
-      key: "email",
-      label: "Contact",
+      key: "job_name",
+      label: "Title",
       sortable: true,
-      render: (value: unknown, lead: Lead) => (
-        <div className="flex flex-col gap-1">
-          {lead.email && (
-            <div className="flex items-center gap-2">
-              <Mail className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{lead.email}</span>
-            </div>
-          )}
-          {lead.phone && (
-            <div className="flex items-center gap-2">
-              <Phone className="h-4 w-4 text-muted-foreground" />
-              <span className="text-sm">{lead.phone}</span>
-            </div>
-          )}
-        </div>
+      render: (value: unknown, estimate: Estimate) => (
+        <div className="flex flex-col gap-1">{estimate.job_name}</div>
       ),
     },
     {
@@ -97,45 +105,40 @@ export function LeadsList() {
       render: (value: unknown) => getStatusBadge(value as string),
     },
     {
-      key: "source",
-      label: "Source",
+      key: "tasks_total_price",
+      label: "Estimates",
       sortable: true,
-      render: (value: unknown) => (
-        <span className="text-sm">{(value as string) || "N/A"}</span>
-      ),
-    },
-    {
-      key: "created_at",
-      label: "Created",
-      sortable: true,
-      render: (value: unknown) => (
-        <span className="text-sm">
-          {new Date(value as string).toLocaleDateString()}
-        </span>
-      ),
+      render: (value: unknown) => {
+        const num = Number(value) || 0;
+
+        return (
+          <span className="text-sm">
+            $
+            {num.toLocaleString("en-US", {
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })}
+          </span>
+        );
+      },
     },
   ];
 
-  const actions: DataTableAction<Lead>[] = [
+  const actions: DataTableAction<Estimate>[] = [
     {
       icon: Edit,
-      label: "Edit Lead",
-      onClick: (lead: Lead) => setIsEditLeadOpen(lead),
-    },
-    {
-      icon: UserCheck,
-      label: "Convert to Customer",
-      onClick: async (lead: Lead) => setIsConvertLeadOpen(lead),
+      label: "Edit Estimate",
+      onClick: (estimate: Estimate) => setIsEditEstimateOpen(estimate),
     },
     {
       icon: Trash2,
-      label: "Delete Lead",
-      onClick: async (lead: Lead) => setIsDeleteLeadOpen(lead),
+      label: "Delete Estimate",
+      onClick: async (estimate: Estimate) => setIsDeleteEstimateOpen(estimate),
     },
   ];
 
   // Batch action configuration for DataTableV2
-  const batchActions: DataTableBatchAction<Lead>[] = [
+  const batchActions: DataTableBatchAction<Estimate>[] = [
     {
       icon: Trash2,
       label: "Delete Leads",
@@ -152,7 +155,7 @@ export function LeadsList() {
       <div>
         <div className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-bold">Leads</h1>
+            <h1 className="text-2xl font-bold">Estimates</h1>
             <p className="text-muted-foreground">
               Manage your sales leads and convert them to customers
             </p>
@@ -160,35 +163,48 @@ export function LeadsList() {
         </div>
       </div>
 
-      {/* Add Lead Form */}
-      <AddLeadForm
-        open={isAddLeadOpen}
-        onOpenChange={setIsAddLeadOpen}
-        onSuccess={() => {
-          setIsAddLeadOpen(false);
-          refreshLeads();
-        }}
-      />
-
-      {/* Edit Lead Form */}
-      {isEditLeadOpen && (
-        <EditLeadForm
-          lead={isEditLeadOpen}
-          open={!!isEditLeadOpen}
-          onOpenChange={() => setIsEditLeadOpen(false)}
-          onSuccess={() => {
-            setIsEditLeadOpen(false);
-            refreshLeads();
+      {/* Add Estimate Customer ID Form */}
+      {isAddConfirmationOpen && (
+        <SearchCustomerForm
+          open={isAddConfirmationOpen}
+          onOpenChange={setIsAddConfirmationOpen}
+          onSuccess={async (customer) => {
+            setIsAddConfirmationOpen(false);
+            await wait(200);
+            setIsAddEstimateOpen(customer);
           }}
         />
       )}
-      {/* {isDeleteLeadOpen && (
-        <DeleteLeadForm
-          lead={isDeleteLeadOpen}
-          open={!!isDeleteLeadOpen}
-          onOpenChange={() => setIsDeleteLeadOpen(false)}
+      {isAddEstimateOpen && (
+        <AddEstimateForm
+          customer={isAddEstimateOpen}
+          open={!!isAddEstimateOpen}
+          onOpenChange={() => setIsAddEstimateOpen(false)}
           onSuccess={() => {
-            setIsDeleteLeadOpen(false);
+            setIsAddEstimateOpen(false);
+            refreshEstimates();
+          }}
+        />
+      )}
+      {/* Edit Lead Form */}
+      {/* {isEditEstimateOpen && (
+        <EditLeadForm
+          lead={isEditEstimateOpen}
+          open={!!isEditEstimateOpen}
+          onOpenChange={() => setIsEditEstimateOpen(false)}
+          onSuccess={() => {
+            setIsEditEstimateOpen(false);
+            refreshLeads();
+          }}
+        />
+      )} */}
+      {/* {isDeleteEstimateOpen && (
+        <DeleteLeadForm
+          lead={isDeleteEstimateOpen}
+          open={!!isDeleteEstimateOpen}
+          onOpenChange={() => setIsDeleteEstimateOpen(false)}
+          onSuccess={() => {
+            setIsDeleteEstimateOpen(false);
             refreshLeads();
           }}
         />
@@ -206,8 +222,8 @@ export function LeadsList() {
         />
       )} */}
       {/* Data Table */}
-      <DataTableV2<Lead>
-        data={leads}
+      <DataTableV2<Estimate>
+        data={estimate}
         columns={columns}
         actions={actions}
         batchActions={batchActions}
@@ -238,8 +254,8 @@ export function LeadsList() {
         }}
         searchTerm={searchTerm}
         showAddButton={true}
-        addButtonLabel="Add Lead"
-        onAddClick={() => setIsAddLeadOpen(true)}
+        addButtonLabel="Add Estimate"
+        onAddClick={() => setIsAddConfirmationOpen(true)}
         sortKey={
           sortConfig.length > 0 ? (sortConfig[0].key as string) : undefined
         }

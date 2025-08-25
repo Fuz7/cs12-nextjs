@@ -14,8 +14,10 @@ import {
   updateLead,
 } from "@/services/leads";
 import { useDebounce } from "./useDebounce";
+import { getEstimatesByPagination } from "@/services/estimates";
+import { Estimate } from "@/types/estimates";
 
-export interface SortableLeadColumn {
+export interface SortableEstimateColumn {
   key: keyof Lead;
   columnName: string;
   sortBy?: "asc" | "desc";
@@ -38,7 +40,7 @@ export interface SortableLeadColumn {
 //   setSearchTerm: (term: string) => void;
 //   setSortConfig: (config: SortableLeadColumn[]) => void;
 //   setSelectedRows: (rows: Set<string>) => void;
-//   refreshLeads: () => Promise<void>;
+//   refreshEstimates: () => Promise<void>;
 //   handleCreateLead: (leadData: CreateLeadData) => Promise<boolean>;
 //   handleUpdateLead: (id: number, leadData: UpdateLeadData) => Promise<boolean>;
 //   handleDeleteLead: (id: number) => Promise<boolean>;
@@ -51,23 +53,23 @@ export interface SortableLeadColumn {
 // }
 
 export const useEstimates = () => {
-  const [estimate, setEstimate] = useState<Lead[]>([]);
+  const [estimate, setEstimate] = useState<Estimate[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
   const [searchTerm, setSearchTerm] = useState("");
-  const [sortConfig, setSortConfig] = useState<SortableLeadColumn[]>([]);
+  const [sortConfig, setSortConfig] = useState<SortableEstimateColumn[]>([]);
   const [selectedRows, setSelectedRows] = useState<Set<string>>(new Set());
   const [perPage, setPerPage] = useState(10);
   const totalPages = totalCount > 0 ? Math.ceil(totalCount / perPage) : 1;
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
-  const fetchLeads = useCallback(async () => {
+  const fetchEstimates = useCallback(async () => {
     setLoading(true);
     setError(null);
 
     try {
-      const response = await getLeadsByPagination(
+      const response = await getEstimatesByPagination(
         currentPage,
         perPage,
         sortConfig,
@@ -91,9 +93,9 @@ export const useEstimates = () => {
     }
   }, [currentPage, perPage, sortConfig, debouncedSearchTerm]);
 
-  const refreshLeads = useCallback(async () => {
-    await fetchLeads();
-  }, [fetchLeads]);
+  const refreshEstimates = useCallback(async () => {
+    await fetchEstimates();
+  }, [fetchEstimates]);
 
   const handleCreateLead = useCallback(
     async (leadData: CreateLeadData): Promise<boolean> => {
@@ -172,7 +174,7 @@ export const useEstimates = () => {
       if (response.status === "success") {
         toast.success(`${selectedRows.size} lead(s) deleted successfully`);
         setSelectedRows(new Set());
-        await refreshLeads();
+        await refreshEstimates();
         return true;
       } else {
         toast.error(response.message || "Failed to delete leads");
@@ -184,14 +186,12 @@ export const useEstimates = () => {
       toast.error(errorMessage);
       return false;
     }
-  }, [selectedRows, refreshLeads]);
-
-
+  }, [selectedRows, refreshEstimates]);
 
   // Fetch leads when dependencies change
   useEffect(() => {
-    fetchLeads();
-  }, [fetchLeads]);
+    fetchEstimates();
+  }, [fetchEstimates]);
 
   // Reset to first page when search term changes
   useEffect(() => {
@@ -217,7 +217,7 @@ export const useEstimates = () => {
     setSearchTerm,
     setSortConfig,
     setSelectedRows,
-    refreshLeads,
+    refreshEstimates,
     setPerPage,
     handleCreateLead,
     handleUpdateLead,

@@ -1,7 +1,8 @@
 import { useState, useCallback, useEffect } from "react";
 import { Customer } from "@/types/database";
 import { useDebounce } from "./useDebounce";
-import { getCustomersByPagination } from "@/services/customers";
+import { getCustomersByPagination, searchCustomer } from "@/services/customers";
+import toast from "react-hot-toast";
 
 export type SortableTableColumn = {
   key: keyof Customer | "name";
@@ -20,7 +21,6 @@ export function useCustomers() {
   const [perPage, setPerPage] = useState(10);
   const [maxPage, setMaxPage] = useState<number>(1);
 
-
   // Use a shorter debounce time for better responsiveness
   const debouncedSearchTerm = useDebounce(searchTerm, 200);
 
@@ -35,7 +35,7 @@ export function useCustomers() {
           activePage,
           perPage,
           sortConfig,
-          debouncedSearchTerm,
+          debouncedSearchTerm
         );
         if (customersRes.status === "success") {
           const count = customersRes?.data?.total || 0;
@@ -60,8 +60,28 @@ export function useCustomers() {
         setIsLoading(false);
       }
     },
-    [activePage, perPage, sortConfig, debouncedSearchTerm, ]
+    [activePage, perPage, sortConfig, debouncedSearchTerm]
   );
+
+  const handleSearchCustomer = useCallback(async (id: number) => {
+    try {
+      const response = await searchCustomer(id);
+
+      if (
+        response.status === "success" &&
+        Object.keys(response.data as object).length !== 0
+      ) {
+        return response.data as Customer;
+      } else {
+        return false;
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An error occurred";
+      toast.error(errorMessage);
+      return false;
+    }
+  }, []);
 
   // Refresh function that can be called from outside
   const refresh = useCallback(() => {
@@ -71,7 +91,9 @@ export function useCustomers() {
   // Store previous values to detect changes
   const [prevSearchTerm, setPrevSearchTerm] = useState(debouncedSearchTerm);
   const [prevPerPage, setPrevPerPage] = useState(perPage);
-  const [prevSortConfig, setPrevSortConfig] = useState(JSON.stringify(sortConfig));
+  const [prevSortConfig, setPrevSortConfig] = useState(
+    JSON.stringify(sortConfig)
+  );
 
   useEffect(() => {
     // Detect what changed
@@ -85,7 +107,7 @@ export function useCustomers() {
     if (sortConfigChanged) setPrevSortConfig(JSON.stringify(sortConfig));
 
     if (
-      (searchChanged  || perPageChanged || sortConfigChanged) &&
+      (searchChanged || perPageChanged || sortConfigChanged) &&
       activePage !== 1
     ) {
       setActivePage(1);
@@ -119,5 +141,6 @@ export function useCustomers() {
     setActivePage,
     setSearchTerm,
     refresh,
+    handleSearchCustomer,
   };
 }

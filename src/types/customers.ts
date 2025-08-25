@@ -15,3 +15,4 @@ export interface PaginatedCustomerResponse {
   total: number;
 }
 export type CustomerAdd = Omit<Customer, "id" | "created_at" | "updated_at">;
+
