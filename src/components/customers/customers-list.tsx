@@ -8,7 +8,7 @@ import { useCustomers } from "@/hooks/useCustomers";
 import type { Customer } from "@/types/database";
 import { EditCustomerForm } from "./edit-customer-form";
 import { AddCustomerForm } from "./add-customer-form";
-import DeleteCustomersByBatchForm from "./delete-customers-batch-form";
+import DeleteCustomersByBatchForm from "./batch-delete-customers--form";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { DataTableV2, DataTableColumn, DataTableBatchAction } from "@/components/ui/data-table-v2";

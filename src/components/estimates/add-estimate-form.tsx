@@ -24,10 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
 import { currencyCharacter, Customer } from "@/types/database";
 import { Plus, Trash2 } from "lucide-react";
-import {
-  ESTIMATE_STATUSES,
-  EstimateAdd,
-} from "@/types/estimates";
+import { ESTIMATE_STATUSES, EstimateAdd } from "@/types/estimates";
 import NumberInput from "../ui/number-input";
 import { createEstimate } from "@/services/estimates";
 
@@ -98,7 +95,7 @@ export function AddEstimateForm({
       // Reset form data
       setFormData({
         job_name: "",
-        status: "draft" ,
+        status: "draft",
         tasks: [{ description: "", price: "" }],
         notes: "",
       });
@@ -185,7 +182,6 @@ export function AddEstimateForm({
                 />
               </div>
             </div>
-
             <div className="space-y-2">
               <Label htmlFor="company_name">Job Name *</Label>
               <Input
@@ -318,24 +314,13 @@ export function AddEstimateForm({
               >
                 Total Estimate:&nbsp;
                 <span className="font-medium">
-                  {currencyCharacter + totalTaskPrice.toLocaleString(undefined,{
-                    minimumFractionDigits:2,
-                    maximumFractionDigits:2
-                  })}
+                  {currencyCharacter +
+                    totalTaskPrice.toLocaleString(undefined, {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
                 </span>
               </div>
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                name="notes"
-                value={formData.notes || ""}
-                onChange={handleChange}
-                placeholder="Enter any additional notes"
-                className="resize-none"
-              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
@@ -356,6 +341,17 @@ export function AddEstimateForm({
                   </SelectContent>
                 </Select>
               </div>
+            </div>{" "}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                name="notes"
+                value={formData.notes || ""}
+                onChange={handleChange}
+                placeholder="Enter any additional notes"
+                className="resize-none"
+              />
             </div>
           </div>
           <DialogFooter className="">

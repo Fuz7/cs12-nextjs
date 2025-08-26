@@ -24,11 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
 import { currencyCharacter } from "@/types/database";
 import { Plus, Trash2 } from "lucide-react";
-import {
-  Estimate,
-  ESTIMATE_STATUSES,
-  EstimateAdd,
-} from "@/types/estimates";
+import { Estimate, ESTIMATE_STATUSES, EstimateAdd } from "@/types/estimates";
 import NumberInput from "../ui/number-input";
 import { editEstimate } from "@/services/estimates";
 
@@ -350,17 +346,6 @@ export function EditEstimateForm({
               </div>
             </div>
 
-            <div className="space-y-2">
-              <Label htmlFor="notes">Notes</Label>
-              <Textarea
-                id="notes"
-                name="notes"
-                value={formData.notes || ""}
-                onChange={handleChange}
-                placeholder="Enter any additional notes"
-                className="resize-none"
-              />
-            </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="status">Status</Label>
@@ -381,6 +366,17 @@ export function EditEstimateForm({
                 </Select>
               </div>
             </div>
+          </div>{" "}
+          <div className="space-y-2">
+            <Label htmlFor="notes">Notes</Label>
+            <Textarea
+              id="notes"
+              name="notes"
+              value={formData.notes || ""}
+              onChange={handleChange}
+              placeholder="Enter any additional notes"
+              className="resize-none"
+            />
           </div>
           <DialogFooter className="">
             <Button

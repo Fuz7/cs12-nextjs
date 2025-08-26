@@ -8,6 +8,8 @@ export type Estimate = {
   status: EstimateStatus;
   notes?: string;
   tasks: TaskFillable[];
+  updated_at?: Date;
+  created_at?: Date;
 };
 
 export type EstimateStatus = "draft" | "sent" | "approved" | "rejected";

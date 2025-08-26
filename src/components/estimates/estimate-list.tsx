@@ -19,6 +19,8 @@ import { AddEstimateForm } from "./add-estimate-form";
 import { wait } from "@/utils/promise";
 import { EditEstimateForm } from "./edit-estimate-form";
 import DeleteEstimateForm from "./delete-estimate-form";
+import DeleteEstimatesByBatchForm from "./batch-delete-estimate-form";
+import { InfoEstimate } from "./info-estimate";
 
 export function EstimatesList() {
   const {
@@ -36,6 +38,9 @@ export function EstimatesList() {
     totalCount,
   } = useEstimates();
   console.log(estimate);
+  const [isInfoEstimateShown, setIsInfoEstimateShown] = useState<
+    Estimate | false
+  >(false);
   const [isAddConfirmationOpen, setIsAddConfirmationOpen] = useState(false);
   const [isAddEstimateOpen, setIsAddEstimateOpen] = useState<Customer | false>(
     false
@@ -46,6 +51,10 @@ export function EstimatesList() {
   const [isDeleteEstimateOpen, setIsDeleteEstimateOpen] = useState<
     Estimate | false
   >(false);
+  const [isDeleteBatchFormOpen, setIsDeleteBatchFormOpen] = useState(false);
+  const [selectedEstimateIds, setSelectedEstimateIds] = useState<Set<string>>(
+    new Set()
+  );
 
   // Get status badge component
   const getStatusBadge = (status: string) => {
@@ -76,8 +85,8 @@ export function EstimatesList() {
       render: (value: unknown, estimate: Estimate) => (
         <div>
           <Link
-            href={`dashboard/customers/${estimate.customer?.id}`}
-            className="font-medium"
+            href={`customers/${estimate.customer?.id}`}
+            className="font-medium hover:underline"
           >
             {estimate.customer.first_name + " " + estimate.customer.last_name}
           </Link>
@@ -140,9 +149,10 @@ export function EstimatesList() {
   const batchActions: DataTableBatchAction<Estimate>[] = [
     {
       icon: Trash2,
-      label: "Delete Leads",
+      label: "Delete Estimates",
       onClick: (selectedIds: string[]) => {
-        console.log("Batch delete clicked for:", selectedIds);
+        setSelectedEstimateIds(new Set(selectedIds));
+        setIsDeleteBatchFormOpen(true);
       },
       show: (count: number) => count > 0,
       variant: "destructive",
@@ -161,6 +171,14 @@ export function EstimatesList() {
           </div>
         </div>
       </div>
+
+      {isInfoEstimateShown && (
+        <InfoEstimate
+          estimate={isInfoEstimateShown}
+          open={!!isInfoEstimateShown}
+          onOpenChange={()=> setIsInfoEstimateShown(false)}
+        />
+      )}
 
       {/* Add Estimate Customer ID Form */}
       {isAddConfirmationOpen && (
@@ -209,6 +227,17 @@ export function EstimatesList() {
         />
       )}
 
+      {/* Delete Customers Form */}
+      <DeleteEstimatesByBatchForm
+        selectedIds={selectedEstimateIds}
+        open={isDeleteBatchFormOpen}
+        onOpenChange={setIsDeleteBatchFormOpen}
+        onSuccess={() => {
+          setIsDeleteBatchFormOpen(false);
+          setSelectedEstimateIds(new Set());
+          refreshEstimates();
+        }}
+      />
       {/* Data Table */}
       <DataTableV2<Estimate>
         data={estimate}
@@ -251,6 +280,9 @@ export function EstimatesList() {
         pagination={true}
         pageSize={perPage}
         pageSizeOptions={[10, 25, 50, 100]}
+        onRowClick={(estimate) => {
+          setIsInfoEstimateShown(estimate);
+        }}
       />
     </div>
   );
