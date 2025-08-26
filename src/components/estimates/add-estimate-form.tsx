@@ -101,7 +101,7 @@ export function AddEstimateForm({
       // Reset form data
       setFormData({
         job_name: "",
-        status: "" as EstimateStatus,
+        status: "draft" ,
         tasks: [{ description: "", price: "" }],
         notes: "",
       });
@@ -295,7 +295,7 @@ export function AddEstimateForm({
                         />
                       </div>
                     </div>
-                    {index === 0 ? (
+                    {index === 0 && formData.tasks.length < 2 ? (
                       <div className="ml-10 mr-4 w-5"></div>
                     ) : (
                       <button
