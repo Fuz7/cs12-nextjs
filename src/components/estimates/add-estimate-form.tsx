@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useRef, useState } from "react";
+import React, { useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -24,7 +24,7 @@ import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
 import { CustomerAdd } from "@/types/customers";
 import { createCustomer } from "@/services/customers";
-import { Customer } from "@/types/database";
+import { currencyCharacter, Customer } from "@/types/database";
 import { Plus, Trash2 } from "lucide-react";
 import {
   ESTIMATE_STATUSES,
@@ -56,7 +56,15 @@ export function AddEstimateForm({
     tasks: [{ description: "", price: "" }],
     notes: "",
   });
-
+  const [autoFocusTaskIndex, setAutoFocusTaskIndex] = useState<number | null>(
+    null
+  );
+  const totalTaskPrice = useMemo(() => {
+    return formData.tasks.reduce(
+      (accumulator, task) => accumulator + Number(task.price),
+      0
+    );
+  }, [formData.tasks]);
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -134,6 +142,7 @@ export function AddEstimateForm({
         tasks: [...form.tasks, { description: "", price: "" }],
       };
     });
+    setAutoFocusTaskIndex(formData.tasks.length);
   };
 
   const removeTask = (indexToRemove: number) => {
@@ -146,7 +155,7 @@ export function AddEstimateForm({
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent
-        className=" max-h-[90vh]  sm:max-w-[600px]
+        className=" max-h-[95vh]  sm:max-w-[600px]
       "
       >
         <DialogHeader>
@@ -210,16 +219,16 @@ export function AddEstimateForm({
               </div>
               <div
                 className="flex flex-col gap-2
-              max-h-[calc(90vh-622px)] overflow-y-auto
+              max-h-[calc(95vh-695px)] overflow-y-auto
               "
               >
                 {formData.tasks.map((task, index) => (
                   <div
                     key={"task" + index}
-                    className="bg-[#F1F1F1] rounded-sm  p-4 flex items-center"
+                    className="bg-[#F1F1F1] rounded-sm  p-3 flex items-center"
                   >
                     <div className="flex  gap-8 flex-1">
-                      <div className="flex flex-1  flex-col gap-1">
+                      <div className="flex flex-1  flex-col gap-0.5">
                         <Label
                           className="font-normal text-gray-600 text-[12px]"
                           htmlFor={`task_description${index}`}
@@ -227,6 +236,7 @@ export function AddEstimateForm({
                           Task Description
                         </Label>
                         <Input
+                          autoFocus={autoFocusTaskIndex === index}
                           value={formData.tasks.at(index)?.description}
                           onChange={(e) => {
                             setFormData((formData) => {
@@ -254,12 +264,12 @@ export function AddEstimateForm({
                           className="w-full border-neutral-400"
                         />
                       </div>
-                      <div className="flex flex-col  gap-1">
+                      <div className="flex flex-col  gap-0.5">
                         <Label
                           className="font-normal text-gray-600 text-[12px]"
                           htmlFor="price1"
                         >
-                          Price ($)
+                          Price ({currencyCharacter})
                         </Label>
                         <NumberInput
                           allowFloat
@@ -302,6 +312,17 @@ export function AddEstimateForm({
                     )}
                   </div>
                 ))}
+              </div>
+            </div>
+            <div className="flex justify-end">
+              <div
+                className="bg-[#D9E8FD] text-[#2560F2] text-sm rounded-md 
+              px-4 pt-2.5 pb-2"
+              >
+                Total Estimate:&nbsp;
+                <span className="font-medium">
+                  {currencyCharacter + totalTaskPrice.toFixed(2)}
+                </span>
               </div>
             </div>
 

@@ -39,7 +39,7 @@ export async function createEstimate(
   formData: EstimateAdd,
   customerId: number
 ) {
-  const res = await axios.post("/api/estimates", { formData, customerId });
+  const res = await axios.post(`/api/estimates/${customerId}`, formData);
   if (res.status !== 200) {
     return jsonResponse({
       data: null,

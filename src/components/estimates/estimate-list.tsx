@@ -17,7 +17,7 @@ import { Estimate, ESTIMATE_STATUSES } from "@/types/estimates";
 import Link from "next/link";
 import AddEstimateCustomerIdForm from "./search-customer-form";
 import SearchCustomerForm from "./search-customer-form";
-import { Customer } from "@/types/database";
+import { currencyCharacter, Customer } from "@/types/database";
 import { AddEstimateForm } from "./add-estimate-form";
 import { wait } from "@/utils/promise";
 
@@ -113,7 +113,7 @@ export function EstimatesList() {
 
         return (
           <span className="text-sm">
-            $
+            {currencyCharacter}
             {num.toLocaleString("en-US", {
               minimumFractionDigits: 2,
               maximumFractionDigits: 2,
