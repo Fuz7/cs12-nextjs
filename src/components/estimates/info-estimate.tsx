@@ -1,4 +1,4 @@
-import { Estimate } from "@/types/estimates";
+import { Estimate, ESTIMATE_STATUSES } from "@/types/estimates";
 import {
   Dialog,
   DialogContent,
@@ -20,21 +20,34 @@ import {
 import { formatToPHDate } from "@/utils/date";
 import { cn } from "@/lib/utils";
 import { Button } from "../ui/button";
+import { Badge } from "../ui/badge";
+import { SetStateAction } from "react";
+
+type Setter<T> = React.Dispatch<SetStateAction<T>>;
 
 interface InfoEstimateProps {
   estimate: Estimate;
   open: boolean;
   onOpenChange: (open: boolean) => void;
+  setIsDeleteEstimateOpen: Setter<Estimate | false>;
+  setIsEditEstimateOpen: Setter<Estimate | false>;
+  onButtonsClick: <T>(setter: Setter<T>, value: T) => void;
 }
 
 export function InfoEstimate({
   estimate,
   open,
   onOpenChange,
+  setIsEditEstimateOpen,
+  setIsDeleteEstimateOpen,
+  onButtonsClick,
 }: InfoEstimateProps) {
   const totalAmount = estimate.tasks.reduce(
     (accumulator, task) => accumulator + Number(task.price),
     0
+  );
+  const statusConfig = ESTIMATE_STATUSES.find(
+    (s) => s.value === estimate.status
   );
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -47,7 +60,7 @@ export function InfoEstimate({
           <DialogDescription hidden>
             The info of {estimate.job_name}
           </DialogDescription>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-4 relative">
             <div className="flex flex-col items-start ">
               <span className="text-sm font-regular text-neutral-600">
                 Estimate ID
@@ -66,6 +79,12 @@ export function InfoEstimate({
                 {formatToPHDate(estimate?.created_at as Date)}
               </span>
             </div>
+            <Badge
+              variant={"secondary"}
+              className={cn(statusConfig?.color, "absolute right-4 top-0")}
+            >
+              {statusConfig?.label}
+            </Badge>
           </div>
         </DialogHeader>
         <Separator className="my-1 overflow-hidden gutter" />
@@ -187,10 +206,19 @@ export function InfoEstimate({
         </div>
         <DialogFooter className="flex sm:justify-between">
           <div className="flex gap-4 ">
-            <Button variant={"outline"} className="">Edit Estimate</Button>
-          <Button variant={"outline"}>
-            <Trash2 color="#FF2828" />
-          </Button>
+            <Button
+              onClick={() => onButtonsClick(setIsEditEstimateOpen, estimate)}
+              variant={"outline"}
+              className=""
+            >
+              Edit Estimate
+            </Button>
+            <Button
+              onClick={() => setIsDeleteEstimateOpen(estimate)}
+              variant={"outline"}
+            >
+              <Trash2 color="#FF2828" />
+            </Button>
           </div>
           <div className="flex gap-4">
             <Button

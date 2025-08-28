@@ -85,9 +85,8 @@ export function EstimatesList() {
       render: (value: unknown, estimate: Estimate) => (
         <div>
           <Link
-            onClick={(e)=>{
-              e.stopPropagation()
-              
+            onClick={(e) => {
+              e.stopPropagation();
             }}
             href={`customers/${estimate.customer?.id}`}
             className="font-medium hover:underline"
@@ -180,7 +179,14 @@ export function EstimatesList() {
         <InfoEstimate
           estimate={isInfoEstimateShown}
           open={!!isInfoEstimateShown}
-          onOpenChange={()=> setIsInfoEstimateShown(false)}
+          setIsEditEstimateOpen={setIsEditEstimateOpen}
+          setIsDeleteEstimateOpen={setIsDeleteEstimateOpen}
+          onOpenChange={() => setIsInfoEstimateShown(false)}
+          onButtonsClick={async (setModalOpen, value) => {
+            setIsInfoEstimateShown(false);
+            await wait(200);
+            setModalOpen(value);
+          }}
         />
       )}
 
@@ -226,6 +232,7 @@ export function EstimatesList() {
           onOpenChange={() => setIsDeleteEstimateOpen(false)}
           onSuccess={() => {
             setIsDeleteEstimateOpen(false);
+            setIsInfoEstimateShown(false);
             refreshEstimates();
           }}
         />
