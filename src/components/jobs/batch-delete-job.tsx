@@ -10,24 +10,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { Customer } from "@/types/database";
-import { deleteCustomers } from "@/services/customers";
-type DeleteCustomersProps = {
+import { deleteJobs } from "@/services/jobs";
+type DeleteEstimatesProps = {
   selectedIds?: Set<string>;
   onSuccess: () => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
-  setData?: (setter: (data: Customer[]) => Customer[]) => void;
 };
 
-export default function DeleteCustomersByBatchForm({
+export default function DeleteJobsByBatchForm({
+
   selectedIds,
   onSuccess,
   open,
   onOpenChange,
-  setData,
-}: DeleteCustomersProps) {
-  const customersToDelete = selectedIds || new Set<string>();
+}: DeleteEstimatesProps) {
+  const jobToDelete = selectedIds || new Set<string>();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (e: React.FormEvent) => {
@@ -35,30 +33,26 @@ export default function DeleteCustomersByBatchForm({
     setIsDeleting(true);
 
     try {
-      // Create customer with proper error handling
-      const response = await deleteCustomers(customersToDelete);
+      // Create job with proper error handling
+      const response = await deleteJobs(jobToDelete);
 
       if (response.status === "error") {
-        throw new Error(response.message || "Failed to delete customers");
+        throw new Error(response.message || "Failed to delete job");
       }
 
       // Optimistacally Update
-      if (setData) {
-        setData((customers) =>
-          customers.filter((customer) => !selectedIds?.has(String(customer.id)))
-        );
-      }
-      // Success! The customer was created
-      toast.success("Customer deleted successfully");
+
+      // Success! The job was created
+      toast.success("Estimate deleted successfully");
 
       // Close the modal and close the page
       onSuccess();
     } catch (error) {
-      console.error("Error deleting customers:", error);
+      console.error("Error deleting job:", error);
       toast.error(
         typeof error === "object" && error !== null && "message" in error
           ? String(error.message)
-          : "Failed to delete customers. Please try again."
+          : "Failed to delete job. Please try again."
       );
     } finally {
       setIsDeleting(false);
@@ -70,12 +64,12 @@ export default function DeleteCustomersByBatchForm({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Delete {customersToDelete.size}{" "}
-            {customersToDelete.size > 1 ? "customers" : "customer"}?
+            Delete {jobToDelete.size}{" "}
+            {jobToDelete.size > 1 ? "jobs" : "job"}?
           </DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the
-            customers and remove the data from our servers.
+            job and remove the data from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>

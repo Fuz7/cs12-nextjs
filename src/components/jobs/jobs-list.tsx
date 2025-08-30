@@ -13,13 +13,16 @@ import { Badge } from "@/components/ui/badge";
 import { useEstimates } from "@/hooks/useEstimates";
 import { Estimate, ESTIMATE_STATUSES } from "@/types/estimates";
 import Link from "next/link";
-import { currencyCharacter, Customer } from "@/types/database";
+import { Customer } from "@/types/database";
 import { Job, JOB_STATUSES } from "@/types/jobs";
 import { useJobs } from "@/hooks/useJobs";
 import { formatToPHDate } from "@/utils/date";
 import { AddJobForm } from "./add-job-form";
 import { wait } from "@/utils/promise";
 import SearchCustomerForm from "../estimates/search-customer-form";
+import { EditJobForm } from "./edit-job-form";
+import DeleteJobForm from "./delete-job-form";
+import DeleteJobsByBatchForm from "./batch-delete-job";
 
 export function JobsList() {
   const {
@@ -42,17 +45,11 @@ export function JobsList() {
   );
   const [isAddConfirmationOpen, setIsAddConfirmationOpen] = useState(false);
   const [isAddJobOpen, setIsAddJobOpen] = useState<Customer | false>(false);
-  const [isEditEstimateOpen, setIsEditEstimateOpen] = useState<Job | false>(
-    false
-  );
-  const [isDeleteEstimateOpen, setIsDeleteEstimateOpen] = useState<Job | false>(
-    false
-  );
+  const [isEditJobOpen, setIsEditJobOpen] = useState<Job | false>(false);
+  const [isDeleteJobOpen, setIsDeleteJobOpen] = useState<Job | false>(false);
   const [isDeleteBatchFormOpen, setIsDeleteBatchFormOpen] = useState(false);
   const [selectedJobIds, setSelectedJobIds] = useState<Set<string>>(new Set());
-  const [isApproveEstimateOpen, setIsApproveEstimateOpen] = useState<
-    Estimate | false
-  >(false);
+
   // Get status badge component
   const getStatusBadge = (status: string) => {
     const statusConfig = JOB_STATUSES.find((s) => s.value === status);
@@ -128,7 +125,7 @@ export function JobsList() {
     {
       icon: Edit,
       label: "Edit Job",
-      onClick: (job: Job) => setIsEditEstimateOpen(job),
+      onClick: (job: Job) => setIsEditJobOpen(job),
     },
 
     // {
@@ -141,7 +138,7 @@ export function JobsList() {
       icon: Trash2,
       label: "Delete Job",
 
-      onClick: async (job: Job) => setIsDeleteEstimateOpen(job),
+      onClick: async (job: Job) => setIsDeleteJobOpen(job),
     },
   ];
 
@@ -165,9 +162,7 @@ export function JobsList() {
         <div className="flex justify-between items-center">
           <div>
             <h1 className="text-2xl font-bold">Jobs</h1>
-            <p className="text-muted-foreground">
-              Manage your sales leads and convert them to customers
-            </p>
+            <p className="text-muted-foreground">Manage your customer jobs</p>
           </div>
         </div>
       </div>
@@ -177,8 +172,8 @@ export function JobsList() {
           estimate={isInfoEstimateShown}
           open={!!isInfoEstimateShown}
           setIsApproveEstimateOpen={setIsApproveEstimateOpen}
-          setIsEditEstimateOpen={setIsEditEstimateOpen}
-          setIsDeleteEstimateOpen={setIsDeleteEstimateOpen}
+          setIsEditJobOpen={setIsEditJobOpen}
+          setIsDeleteJobOpen={setIsDeleteJobOpen}
           onOpenChange={() => setIsInfoEstimateShown(false)}
           onButtonsClick={async (setModalOpen, value) => {
             setIsInfoEstimateShown(false);
@@ -213,53 +208,42 @@ export function JobsList() {
         />
       )}
 
-      {/* {isEditEstimateOpen && (
-        <EditEstimateForm
-          estimate={isEditEstimateOpen}
-          open={!!isEditEstimateOpen}
-          onOpenChange={() => setIsEditEstimateOpen(false)}
+      {isEditJobOpen && (
+        <EditJobForm
+          job={isEditJobOpen}
+          open={!!isEditJobOpen}
+          onOpenChange={() => setIsEditJobOpen(false)}
           onSuccess={() => {
-            setIsEditEstimateOpen(false);
+            setIsEditJobOpen(false);
             refreshJobs();
           }}
         />
-      )} */}
-      {/* {isDeleteEstimateOpen && (
-        <DeleteEstimateForm
-          estimate={isDeleteEstimateOpen}
-          open={!!isDeleteEstimateOpen}
-          onOpenChange={() => setIsDeleteEstimateOpen(false)}
+      )}
+      {isDeleteJobOpen && (
+        <DeleteJobForm
+          job={isDeleteJobOpen}
+          open={!!isDeleteJobOpen}
+          onOpenChange={() => setIsDeleteJobOpen(false)}
           onSuccess={() => {
-            setIsDeleteEstimateOpen(false);
+            setIsDeleteJobOpen(false);
             setIsInfoEstimateShown(false);
             refreshJobs();
           }}
         />
-      )} */}
+      )}
 
-      {/* {isApproveEstimateOpen && (
-        <ApproveEstimateForm
-          estimate={isApproveEstimateOpen}
-          open={!!isApproveEstimateOpen}
-          onOpenChange={() => setIsApproveEstimateOpen(false)}
-          onSuccess={() => {
-            setIsApproveEstimateOpen(false);
-            setIsInfoEstimateShown(false)
-            refreshJobs();
-          }}
-        />
-      )} */}
+   
 
-      {/* <DeleteEstimatesByBatchForm
-        selectedIds={selectedEstimateIds}
+      <DeleteJobsByBatchForm
+        selectedIds={selectedJobIds}
         open={isDeleteBatchFormOpen}
         onOpenChange={setIsDeleteBatchFormOpen}
         onSuccess={() => {
           setIsDeleteBatchFormOpen(false);
-          setSelectedEstimateIds(new Set());
+          setSelectedJobIds(new Set());
           refreshJobs();
         }}
-      /> */}
+      />
       {/* Data Table */}
       <DataTableV2<Job>
         data={job}

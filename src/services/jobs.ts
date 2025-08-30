@@ -49,3 +49,57 @@ export async function createJob(formData: JobAdd, customerId: number) {
     status: "success",
   });
 }
+
+export async function editJob(
+  formData: JobAdd,
+  jobId: number
+) {
+  const res = await axios.patch(`/api/jobs/${jobId}`, {
+    ...formData,
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to edit job",
+    });
+  }
+  return jsonResponse({
+    data: null,
+    status: "success",
+  });
+}
+
+export async function deleteJob(id: number): Promise<JsonResponse<null>> {
+  const res = await axios.delete(`/api/jobs/${id}`);
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to delete estimate",
+    });
+  }
+  return jsonResponse({
+    data: null,
+    status: "success",
+  });
+}
+
+export async function deleteJobs(
+  ids: Set<string>
+): Promise<JsonResponse<null>> {
+  const res = await axios.delete(`/api/jobs`, {
+    data: { ids: [...ids] },
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: null,
+    status: "success",
+  });
+}

@@ -7,38 +7,37 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteEstimate } from "@/services/estimates";
-import { Estimate } from "@/types/estimates";
+import { deleteJob } from "@/services/jobs";
+import { Job } from "@/types/jobs";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-interface DeleteEstimateFormProps {
-  estimate: Estimate;
+interface DeleteJobFormProps {
+  job: Job;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
-export default function DeleteEstimateForm({
-  estimate,
+export default function DeleteJobForm({
+  job,
   open,
   onOpenChange,
   onSuccess,
-}: DeleteEstimateFormProps) {
+}: DeleteJobFormProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const response = await deleteEstimate(estimate.id);
-
+      const response = await deleteJob(job.id);
       if (response.status === "error") {
-        throw new Error(response.message || "Failed to update estimate");
+        throw new Error(response.message || "Failed to update job");
       }
-      toast.success("Estimate deleted successfully");
+      toast.success("Job deleted successfully");
       onSuccess();
     } catch (error) {
-      console.error("Error deleting estimate:", error);
-      toast.error("Failed to delete estimate. Please try again.");
+      console.error("Error deleting job:", error);
+      toast.error("Failed to delete job. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -48,11 +47,11 @@ export default function DeleteEstimateForm({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete Estimate</DialogTitle>
+          <DialogTitle>Delete Job</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete &nbsp;
-            <span className="font-bold">{estimate.job_name}</span>? This action
-            cannot be undone and will permanently remove all estimate data.
+            <span className="font-bold">{job.job_name}</span>? This action
+            cannot be undone and will permanently remove all job data.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -74,7 +73,7 @@ export default function DeleteEstimateForm({
                 Deleting...
               </>
             ) : (
-              <span>Delete Estimate</span>
+              <>Delete Job</>
             )}
           </Button>
         </DialogFooter>
