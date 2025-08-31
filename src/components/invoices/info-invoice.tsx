@@ -8,6 +8,7 @@ import {
 } from "../ui/dialog";
 import {
   Calendar,
+  CreditCard,
   DollarSign,
   FileText,
   Mail,
@@ -47,6 +48,8 @@ export function InfoInvoice({
     (accumulator, task) => accumulator + Number(task.price),
     0
   );
+  const remainingBalance =
+    Number(invoice.tasks_total_price) - Number(invoice.paid_amount);
   const statusConfig = INVOICE_STATUSES.find((s) => s.value === invoice.status);
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -195,6 +198,57 @@ export function InfoInvoice({
             </div>
           </div>
           <Separator />
+          <div>
+            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <CreditCard className="w-5 h-5" />
+              Payment Summary
+            </h3>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Paid Amount */}
+              <div className="bg-green-50 p-4 rounded-lg border border-green-200">
+                <div className="flex items-center gap-2 mb-2">
+                  <CreditCard className="w-4 h-4 text-green-600" />
+                  <span className="text-sm font-medium text-green-800">
+                    Paid Amount
+                  </span>
+                </div>
+                <p className="text-xl font-bold text-green-900">
+                  ₱{invoice.paid_amount.toLocaleString()}
+                </p>
+              </div>
+
+              {/* Remaining Balance */}
+              <div
+                className={`p-4 rounded-lg border ${
+                  remainingBalance > 0
+                    ? "bg-red-50 border-red-200"
+                    : "bg-gray-50 border-gray-200"
+                }`}
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <DollarSign
+                    className={`w-4 h-4 ${
+                      remainingBalance > 0 ? "text-red-600" : "text-gray-600"
+                    }`}
+                  />
+                  <span
+                    className={`text-sm font-medium ${
+                      remainingBalance > 0 ? "text-red-800" : "text-gray-800"
+                    }`}
+                  >
+                    {remainingBalance > 0 ? "Amount Due" : "Fully Paid"}
+                  </span>
+                </div>
+                <p
+                  className={`text-xl font-bold ${
+                    remainingBalance > 0 ? "text-red-900" : "text-gray-900"
+                  }`}
+                >
+                  ₱{remainingBalance.toLocaleString()}
+                </p>
+              </div>
+            </div>
+          </div>
           {/* Notes */}
           <div className="my-6">
             <h3 className="text-lg font-semibold mb-2 flex items-center gap-2">
