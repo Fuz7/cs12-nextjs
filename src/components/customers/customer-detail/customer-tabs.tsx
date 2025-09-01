@@ -1,10 +1,7 @@
 "use client";
 
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { EmptyState } from "./empty-state";
-import { Calendar, FileText, Receipt, Plus } from "lucide-react";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Calendar, FileText, Receipt } from "lucide-react";
 import { useState } from "react";
 import EstimateTab from "./estimate-tab";
 import { Customer } from "@/types/database";
@@ -57,7 +54,7 @@ export function CustomerTabs({
   } = useSWR(`/api/invoices/${id}`, () =>
     getInvoicesById(Number(id), cookieHeader)
   );
-  console.log(invoices)
+  console.log(invoices);
   return (
     <div className="h-full flex flex-col">
       <Tabs
@@ -77,7 +74,7 @@ export function CustomerTabs({
                 {tab.label}
               </TabsTrigger>
             ))}
-          </TabsList>
+          </TabsList> 
         </div>
         <EstimateTab
           estimates={estimates ? estimates.data : estimates}

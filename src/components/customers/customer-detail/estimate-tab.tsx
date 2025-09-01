@@ -104,6 +104,7 @@ export default function EstimateTab({
           onSuccess={() => {
             setIsDeleteEstimateOpen(false);
             setIsInfoEstimateShown(false);
+            mutate()
           }}
         />
       )}
@@ -115,6 +116,7 @@ export default function EstimateTab({
           onSuccess={() => {
             setIsApproveEstimateOpen(false);
             setIsInfoEstimateShown(false);
+            mutate();
           }}
         />
       )}
@@ -205,9 +207,14 @@ export default function EstimateTab({
                   <div className="flex flex-col items-end gap-1 ">
                     <span className="text-lg font-bold text-gray-900">
                       {currencyCharacter}
-                      {Number(estimate.tasks_total_price).toLocaleString(undefined)}
+                      {Number(estimate.tasks_total_price).toLocaleString(
+                        undefined
+                      )}
                     </span>
-                    <span className="text-sm font-medium"> EST-{estimate.id}</span>
+                    <span className="text-sm font-medium">
+                      {" "}
+                      EST-{estimate.id}
+                    </span>
                   </div>
                 </div>
               </div>

@@ -96,7 +96,7 @@ export default async function CustomerDetailPage(
 
           {/* Stats Bar */}
           <div className="px-6 py-4">
-            <CustomerStats />
+            <CustomerStats id={id} cookieHeader={cookieHeader} />
           </div>
         </div>
 

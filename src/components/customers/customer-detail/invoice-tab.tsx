@@ -101,6 +101,7 @@ export default function InvoiceTab({
           onSuccess={() => {
             setIsDeleteInvoiceOpen(false);
             setIsInfoInvoiceShown(false);
+            mutate()
           }}
         />
       )}

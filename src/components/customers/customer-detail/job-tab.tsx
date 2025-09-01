@@ -90,6 +90,7 @@ export default function JobTab({
           onSuccess={() => {
             setIsDeleteJobOpen(false);
             setIsInfoJobShown(false);
+            mutate()
           }}
         />
       )}
