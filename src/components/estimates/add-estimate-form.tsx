@@ -347,7 +347,11 @@ export function AddEstimateForm({
                   </SelectTrigger>
                   <SelectContent>
                     {ESTIMATE_STATUSES.map((status) => (
-                      <SelectItem key={status.value} value={status.value}>
+                      <SelectItem
+                        hidden={status.value === "approved"}
+                        key={status.value}
+                        value={status.value}
+                      >
                         {status.label}
                       </SelectItem>
                     ))}

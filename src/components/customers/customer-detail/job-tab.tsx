@@ -6,7 +6,7 @@ import { Calendar, FileText, MapPin, Plus } from "lucide-react";
 import { EmptyState } from "./empty-state";
 import { useState } from "react";
 import { Badge } from "@/components/ui/badge";
-import { currencyCharacter, Customer } from "@/types/database";
+import { Customer } from "@/types/database";
 import { wait } from "@/utils/promise";
 
 import { Loader } from "@/components/ui/loader";
@@ -90,7 +90,7 @@ export default function JobTab({
           onSuccess={() => {
             setIsDeleteJobOpen(false);
             setIsInfoJobShown(false);
-            mutate()
+            mutate();
           }}
         />
       )}

@@ -1,7 +1,6 @@
 "use client";
 import { getEstimatesById } from "@/services/estimates";
 import { getInvoicesById } from "@/services/invoices";
-import { getJobsById } from "@/services/jobs";
 import { Calendar, FileText, Receipt, MessageSquare } from "lucide-react";
 import useSWR from "swr";
 
@@ -32,23 +31,11 @@ type CustomerStatsProps = {
 };
 
 export function CustomerStats({ id, cookieHeader }: CustomerStatsProps) {
-  const {
-    data: estimates,
-    mutate: mutateEstimates,
-    isValidating: isEstimateValidating,
-  } = useSWR(`/api/estimates/${id}`, () =>
+  const { data: estimates } = useSWR(`/api/estimates/${id}`, () =>
     getEstimatesById(Number(id), cookieHeader)
   );
-  const {
-    data: jobs,
-    mutate: mutateJobs,
-    isValidating: isJobValidating,
-  } = useSWR(`/api/jobs/${id}`, () => getJobsById(Number(id), cookieHeader));
-  const {
-    data: invoices,
-    mutate: mutateInvoices,
-    isValidating: isInvoiceValidating,
-  } = useSWR(`/api/invoices/${id}`, () =>
+
+  const { data: invoices } = useSWR(`/api/invoices/${id}`, () =>
     getInvoicesById(Number(id), cookieHeader)
   );
 
