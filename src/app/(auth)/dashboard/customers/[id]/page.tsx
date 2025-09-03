@@ -22,6 +22,7 @@ export default async function CustomerDetailPage(
   // @ts-expect-error - Next.js 15.3.5 type issue
   { params, searchParams }
 ) {
+  
   const { id } = await params;
   const { category } = await searchParams;
   const cookieHeader = (await headers()).get("cookie") as string; // browser cookies

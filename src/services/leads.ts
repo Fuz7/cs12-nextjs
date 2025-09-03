@@ -131,3 +131,51 @@ export async function convertLeadToCustomer(
     status: "success",
   });
 }
+
+type NewLeads = {
+  growth_rate_percent: number;
+  last_month_leads: number;
+};
+
+export async function getNewLeads(
+  cookieHeader: string
+): Promise<JsonResponse<NewLeads | null>> {
+  const res = await axios.get(`/api/leads/analytics/getNewLeads`, {
+    headers: { Cookie: cookieHeader, Referer: process.env.FRONTEND_URL },
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}
+
+type ConvertionRate = {
+  growth_rate_percent: number;
+  last_month_conversion_rate: number;
+};
+
+export async function getConvertionRate(
+  cookieHeader: string
+): Promise<JsonResponse<ConvertionRate | null>> {
+  const res = await axios.get(`/api/leads/analytics/getConvertionRate`, {
+    headers: { Cookie: cookieHeader, Referer: process.env.FRONTEND_URL },
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}

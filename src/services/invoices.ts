@@ -127,3 +127,27 @@ export async function deleteInvoices(
     status: "success",
   });
 }
+
+type LastMontRevenue = {
+  last_month: string;
+  percentage_difference: number;
+};
+
+export async function getLastMonthRevenue(
+  cookieHeader: string
+): Promise<JsonResponse<LastMontRevenue | null>> {
+  const res = await axios.get(`/api/invoices/analytics/getLastMonthRevenue`, {
+    headers: { Cookie: cookieHeader, Referer: process.env.FRONTEND_URL },
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}

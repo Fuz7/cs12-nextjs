@@ -125,3 +125,27 @@ export async function searchCustomer(
     status: "success",
   });
 }
+
+type NewCustomers = {
+  growth_rate_percent:number,
+  last_month_customers:number,
+};
+
+export async function getNewCustomers(
+  cookieHeader: string
+): Promise<JsonResponse<NewCustomers | null>> {
+  const res = await axios.get(`/api/customers/analytics/getNewCustomers`, {
+    headers: { Cookie: cookieHeader, Referer: process.env.FRONTEND_URL },
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}
