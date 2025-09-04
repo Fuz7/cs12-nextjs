@@ -79,6 +79,8 @@ export function CustomerTabs({
         <EstimateTab
           estimates={estimates ? estimates.data : estimates}
           mutate={mutateEstimates}
+          mutateJobs={mutateJobs}
+          mutateInvoices={mutateInvoices}
           customer={customer}
           isValidating={isEstimateValidating}
         />

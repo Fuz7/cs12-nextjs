@@ -20,12 +20,16 @@ type EstimateTabProps = {
   customer: Customer;
   estimates: Estimate[] | null | undefined;
   mutate: () => void;
+  mutateInvoices:()=>void,
+  mutateJobs:()=>void,
   isValidating: boolean;
 };
 export default function EstimateTab({
   customer,
   estimates,
   mutate,
+  mutateInvoices,
+  mutateJobs,
   isValidating,
 }: EstimateTabProps) {
   const [isInfoEstimateShown, setIsInfoEstimateShown] = useState<
@@ -117,6 +121,8 @@ export default function EstimateTab({
             setIsApproveEstimateOpen(false);
             setIsInfoEstimateShown(false);
             mutate();
+            mutateJobs()
+            mutateInvoices()
           }}
         />
       )}
