@@ -150,7 +150,7 @@ export function EstimatesList() {
     {
       icon: FileCheck,
       label: "Approve Estimate",
-      disabled: (estimate: Estimate) => estimate.status === "approved",
+      disabled: (estimate: Estimate) => estimate.status !== "sent",
       onClick: async (estimate: Estimate) => setIsApproveEstimateOpen(estimate),
     },
     {

@@ -235,7 +235,7 @@ export function InfoEstimate({
               Cancel
             </Button>
             <Button
-              disabled={estimate.status === "approved"}
+              disabled={estimate.status !== "sent"}
               onClick={() => setIsApproveEstimateOpen(estimate)}
               type="button"
               className="bg-primary"

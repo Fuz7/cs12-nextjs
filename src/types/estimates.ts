@@ -35,19 +35,35 @@ export interface PaginatedEstimateResponse {
 }
 
 export const ESTIMATE_STATUSES = [
-  { value: "draft", label: "Draft", color: "bg-blue-100 text-blue-800" },
+  {
+    value: "draft",
+    label: "Draft",
+    color: "bg-blue-100 text-blue-800",
+    entry: [""],
+  },
   {
     value: "sent",
     label: "Sent",
     color: "bg-yellow-100 text-yellow-800",
+    hover: "hover:bg-yellow-100/90 hover:text-yellow-800/90",
+    entry: ["draft", "rejected"],
   },
   {
     value: "approved",
     label: "Approved",
     color: "bg-green-100 text-green-800",
+    hover: "hover:bg-green-100/90 hover:text-green-800/90",
+    entry: [""],
   },
-  { value: "rejected", label: "Rejected", color: "bg-red-100 text-red-800" },
-] as const;
+  {
+    value: "rejected",
+    label: "Rejected",
+    color: "bg-red-100 text-red-800",
+    hover: "hover:bg-red-100/90 hover:text-red-800/90",
+
+    entry: ["sent"],
+  },
+];
 
 export type EstimateAdd = Omit<
   Estimate,

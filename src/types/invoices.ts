@@ -45,26 +45,46 @@ export type InvoiceAdd = Omit<
   "id" | "customer" | "created_at" | "updated_at"
 >;
 export const INVOICE_STATUSES = [
-  { value: "draft", label: "Draft", color: "bg-blue-100 text-blue-800" },
+  {
+    value: "draft",
+    label: "Draft",
+    color: "bg-blue-100 text-blue-800",
+    hover: "hover:bg-blue-100/90 hover:text-blue-800/90",
+    entry: [""],
+  },
   {
     value: "sent",
     label: "Sent",
     color: "bg-yellow-100 text-yellow-800",
+    hover: "hover:bg-yellow-100/90 hover:text-yellow-800/90",
+    entry: ["draft"],
   },
   {
     value: "partially_paid",
     label: "Partial",
-    color: "bg-green-100 text-green-800",
+    color: "bg-purple-100 text-purple-800",
+    hover: "hover:bg-purple-100/90 hover:text-purple-800/90",
+    entry: [""],
   },
   {
     value: "paid",
     label: "Paid",
     color: "bg-green-100 text-green-800",
+    hover: "hover:bg-green-100/90 hover:text-green-800/90",
+    entry: ["sent", "partially_paid","overdue"],
   },
-  { value: "overdue", label: "Overdue", color: "bg-red-100 text-red-800" },
+  {
+    value: "overdue",
+    label: "Overdue",
+    color: "bg-red-100 text-red-800",
+    hover: "hover:bg-red-100/90 hover:text-red-800/90",
+    entry: [""],
+  },
   {
     value: "cancelled",
     label: "Cancelled",
     color: "bg-neutral-100 text-neutral-800",
+    hover: "hover:bg-neutral-100/90 hover:text-neutral-800/90",
+    entry: ["sent", "partially_paid"],
   },
-] as const;
+];

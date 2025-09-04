@@ -6,13 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -23,10 +16,17 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import toast from "react-hot-toast";
 import { currencyCharacter } from "@/types/database";
-import { Plus, Trash2 } from "lucide-react";
-import { Estimate, ESTIMATE_STATUSES, EstimateAdd } from "@/types/estimates";
+import { Check, Plus, Trash2, X } from "lucide-react";
+import {
+  Estimate,
+  ESTIMATE_STATUSES,
+  EstimateAdd,
+  EstimateStatus,
+} from "@/types/estimates";
 import NumberInput from "../ui/number-input";
 import { editEstimate } from "@/services/estimates";
+import { StatusBadge } from "@/lib/badge";
+import { cn } from "@/lib/utils";
 
 interface AddCustomerFormProps {
   estimate: Estimate;
@@ -51,6 +51,7 @@ export function EditEstimateForm({
     tasks: estimate.tasks,
     notes: estimate.notes,
   });
+  const [action, setAction] = useState<EstimateStatus | false>(false);
   const [autoFocusTaskIndex, setAutoFocusTaskIndex] = useState<number | null>(
     null
   );
@@ -68,9 +69,7 @@ export function EditEstimateForm({
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  const handleSelectChange = (name: string, value: string) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -153,263 +152,313 @@ export function EditEstimateForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent
-        className=" max-h-[95vh]  sm:max-w-[600px]
+    <>
+      {action && (
+        <Dialog open={!!action} onOpenChange={() => setAction(false)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>
+                Mark as{" "}
+                {action.charAt(0).toLocaleUpperCase() +
+                  action.slice(1).toLowerCase()}
+                ?
+              </DialogTitle>
+              <DialogDescription>
+                Are you sure you want to set the status to {action}?
+              </DialogDescription>
+            </DialogHeader>{" "}
+            <DialogFooter>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => setAction(false)}
+                disabled={isSubmitting}
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  setFormData((formData) => {
+                    return { ...formData, status: action };
+                  });
+                  setAction(false);
+                }}
+                type="button"
+              >
+                Confirm
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      )}
+      <Dialog open={open} onOpenChange={onOpenChange}>
+        <DialogContent
+          className=" max-h-[95vh]  sm:max-w-[600px]
       "
-      >
-        <DialogHeader>
-          <DialogTitle>Edit Estimate</DialogTitle>
-          <DialogDescription>
-            Enter the estimate details below. Fields marked with * are required.
-          </DialogDescription>
-        </DialogHeader>
-        <form className=" relative" onSubmit={handleSubmit}>
-          <div className="  grid gap-4 py-4">
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="first_name">Customer Name </Label>
-                <Input
-                  id="customer_name"
-                  name="customer_name"
-                  value={
-                    estimate.customer.first_name +
-                    " " +
-                    estimate.customer.last_name
-                  }
-                  disabled
-                  required
-                />
+        >
+          <DialogHeader>
+            <DialogTitle className="relative pr-10">Edit Estimate</DialogTitle>
+            <DialogDescription>
+              Enter the estimate details below. Fields marked with * are
+              required.
+            </DialogDescription>
+            <StatusBadge
+              statusList={ESTIMATE_STATUSES}
+              className="absolute right-5 top-9"
+              status={formData.status}
+            />
+          </DialogHeader>
+          <form className=" relative" onSubmit={handleSubmit}>
+            <div className="  grid gap-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="first_name">Customer Name </Label>
+                  <Input
+                    id="customer_name"
+                    name="customer_name"
+                    value={
+                      estimate.customer.first_name +
+                      " " +
+                      estimate.customer.last_name
+                    }
+                    disabled
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email </Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    value={estimate.customer.email as string}
+                    disabled
+                    required
+                  />
+                </div>
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="email">Email </Label>
-                <Input
-                  id="email"
-                  name="email"
-                  value={estimate.customer.email as string}
-                  disabled
-                  required
-                />
-              </div>
-            </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="job_name">Job Name *</Label>
-                <Input
-                  id="job_name"
-                  name="job_name"
-                  value={formData.job_name || ""}
-                  onChange={handleChange}
-                />
-              </div>{" "}
-              <div className="space-y-2 ">
-                <Label htmlFor="site_address">Site Address </Label>
-                <Input
-                  id="site_address"
-                  name="site_address"
-                  value={formData.site_address || ""}
-                  onChange={handleChange}
-                />
-              </div>
-            </div>
-            <div
-              ref={taskContainerRef}
-              className="flex flex-col gap-2 
-            "
-            >
-              <div className="space-y-1 flex justify-between items-center">
-                <Label htmlFor="task_description0" className="">
-                  Tasks *
-                </Label>
-                <Button
-                  onClick={addTask}
-                  type="button"
-                  className="flex items-center leading-none"
-                  variant={"outline"}
-                >
-                  <Plus />
-                  <span className="mt-1">Add Tasks</span>
-                </Button>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="job_name">Job Name *</Label>
+                  <Input
+                    id="job_name"
+                    name="job_name"
+                    value={formData.job_name || ""}
+                    onChange={handleChange}
+                  />
+                </div>{" "}
+                <div className="space-y-2 ">
+                  <Label htmlFor="site_address">Site Address </Label>
+                  <Input
+                    id="site_address"
+                    name="site_address"
+                    value={formData.site_address || ""}
+                    onChange={handleChange}
+                  />
+                </div>
               </div>
               <div
-                className="flex flex-col gap-2 pr-1
+                ref={taskContainerRef}
+                className="flex flex-col gap-2 
+            "
+              >
+                <div className="space-y-1 flex justify-between items-center">
+                  <Label htmlFor="task_description0" className="">
+                    Tasks *
+                  </Label>
+                  <Button
+                    onClick={addTask}
+                    type="button"
+                    className="flex items-center leading-none"
+                    variant={"outline"}
+                  >
+                    <Plus />
+                    <span className="mt-1">Add Tasks</span>
+                  </Button>
+                </div>
+                <div
+                  className="flex flex-col gap-2 pr-1
               max-h-[calc(95vh-695px)] overflow-y-auto
               "
-              >
-                {formData.tasks.map((task, index) => (
-                  <div
-                    key={"task" + index}
-                    className="bg-[#F1F1F1] rounded-sm  p-3 flex items-center"
-                  >
-                    <div className="flex  gap-8 flex-1">
-                      <div className="flex flex-1  flex-col gap-0.5">
-                        <Label
-                          className="font-normal text-gray-600 text-[12px]"
-                          htmlFor={`task_description${index}`}
-                        >
-                          Task Description
-                        </Label>
-                        <Input
-                          autoFocus={autoFocusTaskIndex === index}
-                          value={formData.tasks.at(index)?.description}
-                          onChange={(e) => {
-                            setFormData((formData) => {
-                              const newFormDataDescription = formData.tasks.map(
-                                (data, formIndex) => {
-                                  if (formIndex === index) {
-                                    return {
-                                      ...data,
-                                      description: e.target.value,
-                                    };
-                                  }
-                                  return data;
-                                }
-                              );
-                              return {
-                                ...formData,
-                                tasks: newFormDataDescription,
-                              };
-                            });
-                            if (formData.tasks.at(index)?.id === undefined)
-                              return;
-                          }}
-                          required
-                          placeholder="Enter task description"
-                          name={`task_description${index}`}
-                          id={`task_description${index}`}
-                          className="w-full border-neutral-400"
-                        />
-                      </div>
-                      <div className="flex flex-col  gap-0.5">
-                        <Label
-                          className="font-normal text-gray-600 text-[12px]"
-                          htmlFor="price1"
-                        >
-                          Price ({currencyCharacter})
-                        </Label>
-                        <NumberInput
-                          allowFloat
-                          value={String(formData.tasks.at(index)?.price)}
-                          setValue={(value) => {
-                            setFormData((formData) => {
-                              const newFormDataPrice = formData.tasks.map(
-                                (data, formIndex) => {
-                                  if (formIndex === index) {
-                                    return { ...data, price: value };
-                                  }
-                                  return data;
-                                }
-                              );
-                              return { ...formData, tasks: newFormDataPrice };
-                            });
-                            if (formData.tasks.at(index)?.id === undefined)
-                              return;
-                          }}
-                          required
-                          placeholder="0.00"
-                          name={`task${index}`}
-                          id={`task${index}`}
-                          className="max-w-30 border-neutral-400"
-                        />
-                      </div>
-                    </div>
-                    {index === 0 && formData.tasks.length < 2 ? (
-                      <div className="ml-10 mr-4 w-5"></div>
-                    ) : (
-                      <button
-                        onClick={() => {
-                          removeTask(index);
-                          if (formData.tasks.at(index)?.id === undefined)
-                            return;
-
-                          const newDeletedIdSet = new Set(deletedIdSet);
-                          newDeletedIdSet.add(
-                            Number(formData.tasks.at(index)?.id)
-                          );
-                          setDeletedIdSet(newDeletedIdSet);
-                        }}
-                        type="button"
-                        className="cursor-pointer"
-                      >
-                        <Trash2
-                          size={20}
-                          color="#E74640"
-                          className="ml-10 mr-4"
-                        />
-                      </button>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </div>
-            <div className="flex justify-end">
-              <div
-                className="bg-[#D9E8FD] text-[#2560F2] text-sm rounded-md 
-              px-4 pt-2.5 pb-2"
-              >
-                Total Estimate:&nbsp;
-                <span className="font-medium">
-                  {currencyCharacter +
-                    totalTaskPrice.toLocaleString(undefined, {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                </span>
-              </div>
-            </div>
-
-            <div className="grid grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <Label htmlFor="status">Status</Label>
-                <Select
-                  value={formData.status || "new"}
-                  onValueChange={(value) => handleSelectChange("status", value)}
                 >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Select status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {ESTIMATE_STATUSES.map((status) => (
-                      <SelectItem hidden={status.value === 'approved'} key={status.value} value={status.value}>
-                        {status.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                  {formData.tasks.map((task, index) => (
+                    <div
+                      key={"task" + index}
+                      className="bg-[#F1F1F1] rounded-sm  p-3 flex items-center"
+                    >
+                      <div className="flex  gap-8 flex-1">
+                        <div className="flex flex-1  flex-col gap-0.5">
+                          <Label
+                            className="font-normal text-gray-600 text-[12px]"
+                            htmlFor={`task_description${index}`}
+                          >
+                            Task Description
+                          </Label>
+                          <Input
+                            autoFocus={autoFocusTaskIndex === index}
+                            value={formData.tasks.at(index)?.description}
+                            onChange={(e) => {
+                              setFormData((formData) => {
+                                const newFormDataDescription =
+                                  formData.tasks.map((data, formIndex) => {
+                                    if (formIndex === index) {
+                                      return {
+                                        ...data,
+                                        description: e.target.value,
+                                      };
+                                    }
+                                    return data;
+                                  });
+                                return {
+                                  ...formData,
+                                  tasks: newFormDataDescription,
+                                };
+                              });
+                              if (formData.tasks.at(index)?.id === undefined)
+                                return;
+                            }}
+                            required
+                            placeholder="Enter task description"
+                            name={`task_description${index}`}
+                            id={`task_description${index}`}
+                            className="w-full border-neutral-400"
+                          />
+                        </div>
+                        <div className="flex flex-col  gap-0.5">
+                          <Label
+                            className="font-normal text-gray-600 text-[12px]"
+                            htmlFor="price1"
+                          >
+                            Price ({currencyCharacter})
+                          </Label>
+                          <NumberInput
+                            allowFloat
+                            value={String(formData.tasks.at(index)?.price)}
+                            setValue={(value) => {
+                              setFormData((formData) => {
+                                const newFormDataPrice = formData.tasks.map(
+                                  (data, formIndex) => {
+                                    if (formIndex === index) {
+                                      return { ...data, price: value };
+                                    }
+                                    return data;
+                                  }
+                                );
+                                return { ...formData, tasks: newFormDataPrice };
+                              });
+                              if (formData.tasks.at(index)?.id === undefined)
+                                return;
+                            }}
+                            required
+                            placeholder="0.00"
+                            name={`task${index}`}
+                            id={`task${index}`}
+                            className="max-w-30 border-neutral-400"
+                          />
+                        </div>
+                      </div>
+                      {index === 0 && formData.tasks.length < 2 ? (
+                        <div className="ml-10 mr-4 w-5"></div>
+                      ) : (
+                        <button
+                          onClick={() => {
+                            removeTask(index);
+                            if (formData.tasks.at(index)?.id === undefined)
+                              return;
+
+                            const newDeletedIdSet = new Set(deletedIdSet);
+                            newDeletedIdSet.add(
+                              Number(formData.tasks.at(index)?.id)
+                            );
+                            setDeletedIdSet(newDeletedIdSet);
+                          }}
+                          type="button"
+                          className="cursor-pointer"
+                        >
+                          <Trash2
+                            size={20}
+                            color="#E74640"
+                            className="ml-10 mr-4"
+                          />
+                        </button>
+                      )}
+                    </div>
+                  ))}
+                </div>
               </div>
+              <div className="flex justify-end">
+                <div
+                  className="bg-[#D9E8FD] text-[#2560F2] text-sm rounded-md 
+              px-4 pt-2.5 pb-2"
+                >
+                  Total Estimate:&nbsp;
+                  <span className="font-medium">
+                    {currencyCharacter +
+                      totalTaskPrice.toLocaleString(undefined, {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="status">Status</Label>
+
+                  <div className="flex gap-4">
+                    {ESTIMATE_STATUSES.filter((status) =>
+                      status.entry.includes(formData.status as EstimateStatus)
+                    ).map((statusConfig) => (
+                      <Button
+                        type="button"
+                        key={statusConfig.value + "key"}
+                        size={"sm"}
+                        onClick={() =>
+                          setAction(statusConfig.value as EstimateStatus)
+                        }
+                        className={cn(statusConfig.hover, statusConfig.color)}
+                      >
+                        {statusConfig.value === "rejected" ? <X /> : <Check />}
+                        {statusConfig.label}
+                      </Button>
+                    ))}
+                    <Button className="invisible"></Button>
+                  </div>
+                </div>
+              </div>
+            </div>{" "}
+            <div className="space-y-2">
+              <Label htmlFor="notes">Notes</Label>
+              <Textarea
+                id="notes"
+                name="notes"
+                value={formData.notes || ""}
+                onChange={handleChange}
+                placeholder="Enter any additional notes"
+                className="resize-none"
+              />
             </div>
-          </div>{" "}
-          <div className="space-y-2">
-            <Label htmlFor="notes">Notes</Label>
-            <Textarea
-              id="notes"
-              name="notes"
-              value={formData.notes || ""}
-              onChange={handleChange}
-              placeholder="Enter any additional notes"
-              className="resize-none"
-            />
-          </div>
-          <DialogFooter className="">
-            <Button
-              disabled={isSubmitting}
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="submit"
-              disabled={isSubmitting}
-              className="bg-primary"
-            >
-              {isSubmitting ? "Editing..." : "Edit Estimate"}
-            </Button>
-          </DialogFooter>
-        </form>
-      </DialogContent>
-    </Dialog>
+            <DialogFooter className="">
+              <Button
+                disabled={isSubmitting}
+                type="button"
+                variant="outline"
+                onClick={() => onOpenChange(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="submit"
+                disabled={isSubmitting}
+                className="bg-primary"
+              >
+                {isSubmitting ? "Editing..." : "Edit Estimate"}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

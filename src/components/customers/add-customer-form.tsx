@@ -51,8 +51,6 @@ export function AddCustomerForm({
     lead_source: "",
   });
 
- 
-
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -122,7 +120,22 @@ export function AddCustomerForm({
   };
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog
+      open={open}
+      onOpenChange={(value) => {
+        onOpenChange(value);
+        setFormData({
+          first_name: "",
+          last_name: "",
+          company_name: "",
+          email: "",
+          phone: "",
+          property_address: "",
+          billing_address: "",
+          lead_source: "",
+        });
+      }}
+    >
       <DialogContent className="sm:max-w-[600px]">
         <DialogHeader>
           <DialogTitle>Add New Customer</DialogTitle>
@@ -236,7 +249,19 @@ export function AddCustomerForm({
               disabled={isSubmitting}
               type="button"
               variant="outline"
-              onClick={() => onOpenChange(false)}
+              onClick={() => {
+                onOpenChange(false);
+                setFormData({
+                  first_name: "",
+                  last_name: "",
+                  company_name: "",
+                  email: "",
+                  phone: "",
+                  property_address: "",
+                  billing_address: "",
+                  lead_source: "",
+                });
+              }}
             >
               Cancel
             </Button>

@@ -83,11 +83,10 @@ const chartConfig = {
 export function ChartAreaInteractive({
   chartLead,
 }: {
-  chartLead: ChartLead[];
+  chartLead: ChartLead[] | null;
 }) {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("90d");
-
   const chartData = chartLead;
   React.useEffect(() => {
     if (isMobile) {
@@ -96,7 +95,7 @@ export function ChartAreaInteractive({
   }, [isMobile]);
 
   const filteredData = React.useMemo(() => {
-    if (!chartData.length) return [];
+    if (!chartData?.length || !chartData) return [];
 
     // find latest day in data
     const referenceDate = new Date(
@@ -135,6 +134,7 @@ export function ChartAreaInteractive({
       });
   }, [chartData, timeRange]);
   console.log(filteredData);
+  if (!chartLead) return;
   return (
     <Card className="@container/card">
       <CardHeader>

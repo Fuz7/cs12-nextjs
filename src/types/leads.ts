@@ -26,24 +26,41 @@ export interface PaginatedLeadResponse {
   total: number;
 }
 export const LEAD_STATUSES = [
-  { value: "new", label: "New", color: "bg-blue-100 text-blue-800" },
+  {
+    value: "new",
+    label: "New",
+    color: "bg-blue-100 text-blue-800",
+    entry: [""],
+  },
   {
     value: "contacted",
     label: "Contacted",
     color: "bg-yellow-100 text-yellow-800",
+    hover: "hover:bg-yellow-100/90 hover:text-yellow-800/90",
+    entry: ["new"],
   },
   {
     value: "qualified",
     label: "Qualified",
     color: "bg-purple-100 text-purple-800",
+    hover: "hover:bg-purple-100/90 hover:text-purple-800/90",
+    entry: ["contacted"],
   },
   {
     value: "converted",
     label: "Converted",
     color: "bg-green-100 text-green-800",
+    hover: "hover:bg-green-100/90 hover:text-green-800/90",
+    entry: [""],
   },
-  { value: "lost", label: "Lost", color: "bg-red-100 text-red-800" },
-] as const;
+  {
+    value: "lost",
+    label: "Lost",
+    color: "bg-red-100 text-red-800",
+    hover: "hover:bg-red-100/90 hover:text-red-800/90",
+    entry: ["contacted", "qualified"],
+  },
+];
 
 export type LeadStatus =
   | "new"

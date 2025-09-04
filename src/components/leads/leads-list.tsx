@@ -130,6 +130,7 @@ export function LeadsList() {
     },
     {
       icon: UserCheck,
+      disabled:(lead:Lead) => lead.status !== "qualified",
       label: "Convert to Customer",
       onClick: async (lead: Lead) => setIsConvertLeadOpen(lead),
     },
