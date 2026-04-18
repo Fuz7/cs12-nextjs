@@ -115,7 +115,7 @@ export function NavUser() {
             <DropdownMenuGroup>
               <DropdownMenuItem asChild>
                 <Link
-                  href="/dashboard/profile"
+                  href="/admin/dashboard/profile"
                   className="flex w-full items-center"
                 >
                   <IconUserCircle className="mr-2 h-4 w-4" />
@@ -124,7 +124,7 @@ export function NavUser() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link
-                  href="/dashboard/billing"
+                  href="/admin/dashboard/billing"
                   className="flex w-full items-center"
                 >
                   <IconCreditCard className="mr-2 h-4 w-4" />
@@ -133,7 +133,7 @@ export function NavUser() {
               </DropdownMenuItem>
               <DropdownMenuItem asChild>
                 <Link
-                  href="/dashboard/notifications"
+                  href="/admin/dashboard/notifications"
                   className="flex w-full items-center"
                 >
                   <IconNotification className="mr-2 h-4 w-4" />

@@ -1,6 +1,6 @@
 "use client";
 
-import {  LogOut,  ChevronDown } from "lucide-react";
+import { LogOut, ChevronDown } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
@@ -83,7 +83,7 @@ export function SiteHeader({ pageTitle }: { pageTitle: string }) {
                   {/* <DropdownMenuGroup>
                     <DropdownMenuItem asChild>
                       <Link
-                        href="/dashboard/profile"
+                        href="/admin/dashboard/profile"
                         className="flex cursor-pointer items-center"
                       >
                         <User className="mr-2 h-4 w-4" />
@@ -92,7 +92,7 @@ export function SiteHeader({ pageTitle }: { pageTitle: string }) {
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link
-                        href="/dashboard/settings"
+                        href="/admin/dashboard/settings"
                         className="flex cursor-pointer items-center"
                       >
                         <Settings className="mr-2 h-4 w-4" />

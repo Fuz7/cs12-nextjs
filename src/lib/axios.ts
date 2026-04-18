@@ -14,11 +14,12 @@ axios.interceptors.response.use(
   (error) => {
     // If there's a response, unwrap it
     if (error.response && error.response.data) {
+      
       return Promise.reject(error.response.data);
     }
 
     // Otherwise reject with the original error (like network errors)
-    return Promise.reject(error);
+    return Promise.reject(error);       
   }
 );
 export default axios;

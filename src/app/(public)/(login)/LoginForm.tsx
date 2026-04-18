@@ -22,7 +22,6 @@ import { useAuth } from "@/hooks/auth";
 export default function LoginForm() {
   const { login } = useAuth({
     middleware: "guest",
-    redirectIfAuthenticated: "/dashboard",
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);

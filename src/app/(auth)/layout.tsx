@@ -5,7 +5,7 @@ import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { useAuth } from "@/hooks/auth";
 
 export default function Page({ children }: { children: React.ReactNode }) {
-  useAuth({middleware:'auth',redirectIfAuthenticated:'/'})
+  useAuth({middleware:'auth'})
   return (
     <SidebarProvider
       style={

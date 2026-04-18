@@ -20,9 +20,8 @@ export const runtime = "edge";
 
 export default async function CustomerDetailPage(
   // @ts-expect-error - Next.js 15.3.5 type issue
-  { params, searchParams }
+  { params, searchParams },
 ) {
-  
   const { id } = await params;
   const { category } = await searchParams;
   const cookieHeader = (await headers()).get("cookie") as string; // browser cookies
@@ -49,7 +48,7 @@ export default async function CustomerDetailPage(
             The customer you are looking for does not exist or has been deleted.
           </p>
           <Button size="lg" className="mt-4" asChild>
-            <Link href="/dashboard/customers">
+            <Link href="/admin/dashboard/customers">
               <ArrowLeft className="mr-2 h-4 w-4" /> Back to Customers
             </Link>
           </Button>
@@ -62,11 +61,11 @@ export default async function CustomerDetailPage(
   const breadcrumbItems = [
     {
       label: "Dashboard",
-      href: "/dashboard",
+      href: "/admin/dashboard",
     },
     {
       label: "Customers",
-      href: "/dashboard/customers",
+      href: "/admin/dashboard/customers",
     },
     {
       label: `${customer.data?.first_name} ${customer.data?.last_name}`,

@@ -19,7 +19,6 @@ import { useAuth } from "@/hooks/auth";
 export function SignUpForm() {
   const { register } = useAuth({
     middleware: "guest",
-    redirectIfAuthenticated: "/dashboard",
   });
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -48,6 +47,7 @@ export function SignUpForm() {
       email: formData.email,
       password: formData.password,
       password_confirmation: formData.confirmPassword,
+      is_authorized: false,
       setErrors,
     });
     setLoading(false);

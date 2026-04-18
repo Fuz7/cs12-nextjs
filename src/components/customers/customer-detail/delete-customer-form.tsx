@@ -34,7 +34,7 @@ export default function DeleteCustomerForm({
       const response = await deleteCustomers(new Set([String(customer.id)]));
       if (response.status === "success") {
         toast.success("Customer deleted successfully");
-        router.push("/dashboard/customers");
+        router.push("/admin/dashboard/customers");
         onSuccess();
       } else {
         toast.error(response.message || "Failed to delete customer");

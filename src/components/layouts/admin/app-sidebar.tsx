@@ -56,34 +56,34 @@ const navigationData: NavigationData = {
   },
   dashboard: {
     title: "Performance Center",
-    url: "/dashboard",
+    url: "/admin/dashboard",
     icon: BarChart3,
   },
 
   mainNav: [
     {
       title: "Customers",
-      url: "/dashboard/customers",
+      url: "/admin/dashboard/customers",
       icon: Users,
     },
     {
       title: "Leads",
-      url: "/dashboard/leads",
+      url: "/admin/dashboard/leads",
       icon: Magnet,
     },
     {
       title: "Estimate",
-      url: "/dashboard/estimates",
+      url: "/admin/dashboard/estimates",
       icon: TrendingUpDown,
     },
     {
       title: "Jobs",
-      url: "/dashboard/jobs",
+      url: "/admin/dashboard/jobs",
       icon: Briefcase,
     },
     {
       title: "Invoices",
-      url: "/dashboard/invoices",
+      url: "/admin/dashboard/invoices",
       icon: Wallet,
     },
   ],
@@ -110,7 +110,7 @@ function NavItem({
           ? "bg-gray-100 text-gray-900"
           : "text-gray-600 hover:bg-gray-50 hover:text-gray-900",
         isSubItem ? "pl-9" : "",
-        className
+        className,
       )}
     >
       {!isSubItem && "icon" in item && item.icon && (

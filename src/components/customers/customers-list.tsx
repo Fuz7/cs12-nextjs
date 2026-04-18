@@ -39,7 +39,7 @@ export function CustomersList() {
   >(false);
   const [isDeleteFormOpen, setIsDeleteFormOpen] = useState(false);
   const [selectedCustomerIds, setSelectedCustomerIds] = useState<Set<string>>(
-    new Set()
+    new Set(),
   );
   console.log(sortConfig);
   // Column configuration for DataTableV2
@@ -119,7 +119,7 @@ export function CustomersList() {
   //   {
   //     icon: FileText,
   //     label: "View Details",
-  //     onClick: (customer: Customer) => window.open(`/dashboard/customers/${customer.id}`, '_self'),
+  //     onClick: (customer: Customer) => window.open(`/admin/dashboard/customers/${customer.id}`, '_self'),
   //   },
   //   {
   //     icon: MoreHorizontal,
@@ -249,7 +249,9 @@ export function CustomersList() {
           setSelectedCustomerIds(new Set(selectedIds));
         }}
         onRowClick={(customer) => {
-          router.push(`/dashboard/customers/${customer.id}?category=estimate`);
+          router.push(
+            `/admin/dashboard/customers/${customer.id}?category=estimate`,
+          );
         }}
       />
     </div>
