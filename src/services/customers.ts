@@ -150,3 +150,19 @@ export async function getNewCustomers(
     status: "success",
   });
 }
+
+export async function getUnlinkedCustomers(
+): Promise<JsonResponse<Customer[] | []>> {
+  const res = await axios.get(`/api/customers/filter/unlink`);
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: [],
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}

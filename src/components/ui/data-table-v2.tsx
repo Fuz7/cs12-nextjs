@@ -84,7 +84,7 @@ export interface DataTableProps<T = Record<string, unknown>> {
   // Add button
   showAddButton?: boolean;
   addButtonLabel?: string;
-  onAddClick?: () => void;
+  onAddClick?: () => void | null;
 
   // Pagination
   pagination?: boolean;

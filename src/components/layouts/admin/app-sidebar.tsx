@@ -2,12 +2,13 @@
 
 import * as React from "react";
 import {
-  Users,
+  Handshake,
   Magnet,
   BarChart3,
   Briefcase,
   TrendingUpDown,
   Wallet,
+  User,
 } from "lucide-react";
 import Image from "next/image";
 import { cn } from "@/lib/utils";
@@ -64,7 +65,7 @@ const navigationData: NavigationData = {
     {
       title: "Customers",
       url: "/admin/dashboard/customers",
-      icon: Users,
+      icon: Handshake,
     },
     {
       title: "Leads",
@@ -86,6 +87,11 @@ const navigationData: NavigationData = {
       url: "/admin/dashboard/invoices",
       icon: Wallet,
     },
+    {
+      title: "Users",
+      url: "/admin/dashboard/users",
+      icon: User,
+    }
   ],
 };
 

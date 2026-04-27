@@ -1,5 +1,6 @@
 export type Customer ={
   id: string | number;
+  user_id: number | null;
   first_name: string;
   last_name: string;
   company_name: string | null;

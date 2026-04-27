@@ -47,7 +47,7 @@ export function SignUpForm() {
       email: formData.email,
       password: formData.password,
       password_confirmation: formData.confirmPassword,
-      is_authorized: false,
+      is_linked: false,
       setErrors,
     });
     setLoading(false);

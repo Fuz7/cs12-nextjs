@@ -12,7 +12,7 @@ export interface User {
   email: string;
   email_verified_at: string | null;
   role: string;
-  is_authorized: boolean;
+  is_linked: boolean;
   remember_token: string | null;
   created_at: string;
   updated_at: string;
@@ -117,7 +117,7 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
 
   useEffect(() => {
     console.log(user);
-    // if (middleware === "auth" && user.is_authorized === false && !error){
+    // if (middleware === "auth" && user.is_linked === false && !error){
     //   router.push("/verify")
     //   return
     // }
@@ -135,13 +135,20 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
       middleware === "auth" &&
       user &&
       user.role === "user" &&
-      user.is_authorized === false
+      user.is_linked === false
     ) {
       router.push("/verify");
     }
-    if (middleware === "auth" && user && user.role === "admin") {
-      router.push("/admin/dashboard");
-    }
+
+    // if (
+    //   middleware === "guest" &&
+    //   user &&
+    //   user.role === "user" &&
+    //   user.is_linked === true
+    // ) {
+    //   router.push("/admin");
+    // }
+
     // if (middleware === 'auth' && (user && !user.email_verified_at))
     //     router.push('/verify-email')
 
@@ -157,7 +164,7 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
       middleware === "guest" &&
       user &&
       user.role === "user" &&
-      user.is_authorized === false
+      user.is_linked === false
     ) {
       router.push("/verify");
     }

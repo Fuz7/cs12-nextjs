@@ -83,6 +83,7 @@ export default async function CustomerDetailPage(
             [`/api/estimates/${id}`]: estimates,
             [`/api/jobs/${id}`]: jobs,
             [`/api/invoices/${id}`]: invoices,
+            
           },
           // Disable all automatic revalidation
           revalidateOnFocus: false,
