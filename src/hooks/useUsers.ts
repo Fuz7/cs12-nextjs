@@ -5,7 +5,11 @@ import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useDebounce } from "./useDebounce";
 import { User } from "@/types/users";
-import { getUsersByPagination, linkUserToCustomer, unlinkUserFromCustomer } from "@/services/user";
+import {
+  getUsersByPagination,
+  linkUserToCustomer,
+  unlinkUserFromCustomer,
+} from "@/services/users";
 
 export interface SortableUserColumn {
   key: keyof User;
@@ -34,7 +38,7 @@ export const useUsers = () => {
         currentPage,
         perPage,
         sortConfig,
-        debouncedSearchTerm
+        debouncedSearchTerm,
       );
 
       if (response.status === "success" && response.data) {
@@ -54,7 +58,6 @@ export const useUsers = () => {
     }
   }, [currentPage, perPage, sortConfig, debouncedSearchTerm]);
 
-
   const refreshUsers = useCallback(async () => {
     await fetchUsers();
   }, [fetchUsers]);
@@ -70,13 +73,13 @@ export const useUsers = () => {
       setCurrentPage(1);
     }
   }, [debouncedSearchTerm]);
- const linkUser = useCallback(
+  const linkUser = useCallback(
     async (
       customerId: number | string,
-      userId:number | string,
+      userId: number | string,
     ): Promise<boolean> => {
       try {
-        const response = await linkUserToCustomer(customerId,userId);
+        const response = await linkUserToCustomer(customerId, userId);
 
         if (response.status === "success") {
           toast.success("User linked to customer successfully");
@@ -92,15 +95,13 @@ export const useUsers = () => {
         return false;
       }
     },
-    []
+    [],
   );
 
   const unlinkUser = useCallback(
-    async (
-      userId:number | string,
-    ): Promise<boolean> => {
+    async (userId: number | string): Promise<boolean> => {
       try {
-        const response = await unlinkUserFromCustomer (userId);
+        const response = await unlinkUserFromCustomer(userId);
 
         if (response.status === "success") {
           toast.success("User unlinked successfully");
@@ -116,9 +117,8 @@ export const useUsers = () => {
         return false;
       }
     },
-    []
+    [],
   );
-
 
   return {
     user,
@@ -140,6 +140,6 @@ export const useUsers = () => {
     refreshUsers,
     setPerPage,
     linkUser,
-    unlinkUser
+    unlinkUser,
   };
 };

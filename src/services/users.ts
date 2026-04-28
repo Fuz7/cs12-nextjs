@@ -72,3 +72,36 @@ export async function unlinkUserFromCustomer(
     status: "success",
   });
 }
+
+export async function deleteUser(id: number): Promise<JsonResponse<null>> {
+  const res = await axios.delete(`/api/users/${id}`);
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to delete user",
+    });
+  }
+  return jsonResponse({
+    data: null,
+    status: "success",
+  });
+}
+export async function deleteUsers(
+  ids: Set<string>
+): Promise<JsonResponse<null>> {
+  const res = await axios.delete(`/api/users`, {
+    data: { ids: [...ids] },
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: null,
+    status: "success",
+  });
+}

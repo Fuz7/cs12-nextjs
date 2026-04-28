@@ -7,37 +7,37 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { deleteInvoice } from "@/services/invoices";
-import { Invoice } from "@/types/invoices";
+import { deleteUser } from "@/services/users";
+import { User } from "@/types/users";
 import { useState } from "react";
 import toast from "react-hot-toast";
 
-interface DeleteInvoiceFormProps {
-  invoice: Invoice;
+interface DeleteUserFormProps {
+  user: User;
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSuccess: () => void;
 }
-export default function DeleteInvoiceForm({
-  invoice,
+export default function DeleteUserForm({
+  user,
   open,
   onOpenChange,
   onSuccess,
-}: DeleteInvoiceFormProps) {
+}: DeleteUserFormProps) {
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      const response = await deleteInvoice(invoice.id);
+      const response = await deleteUser(user.id);
       if (response.status === "error") {
-        throw new Error(response.message || "Failed to update invoice");
+        throw new Error(response.message || "Failed to update user");
       }
-      toast.success("Invoice deleted successfully");
+      toast.success("User deleted successfully");
       onSuccess();
     } catch (error) {
-      console.error("Error deleting invoice:", error);
-      toast.error("Failed to delete invoice. Please try again.");
+      console.error("Error deleting user:", error);
+      toast.error("Failed to delete user. Please try again.");
     } finally {
       setIsDeleting(false);
     }
@@ -47,11 +47,11 @@ export default function DeleteInvoiceForm({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Delete Invoice</DialogTitle>
+          <DialogTitle>Delete User</DialogTitle>
           <DialogDescription>
             Are you sure you want to delete &nbsp;
-            <span className="font-bold">{invoice.job_name}</span>? This action
-            cannot be undone and will permanently remove all invoice data.
+            <span className="font-bold">{user.name}</span>? This action cannot
+            be undone and will permanently remove all user data.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
@@ -73,7 +73,7 @@ export default function DeleteInvoiceForm({
                 Deleting...
               </>
             ) : (
-              <>Delete Invoice</>
+              <>Delete User</>
             )}
           </Button>
         </DialogFooter>

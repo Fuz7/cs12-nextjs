@@ -24,6 +24,7 @@ import { User } from "@/types/users";
 import { INVOICE_STATUSES } from "@/types/invoices";
 import LinkUserForm from "./link-user-form";
 import UnlinkUserForm from "./unlink-user-form";
+import { InfoUser } from "./info-user";
 export function UsersList() {
   const {
     user,
@@ -201,12 +202,14 @@ export function UsersList() {
         </div>
       </div>
 
-      {/* {isInfoUserShown && (
+      {isInfoUserShown && (
         <InfoUser
           user={isInfoUserShown}
           open={!!isInfoUserShown}
-          setIsLinkUserOpen={setIsLinkUserOpen}
+          is_user_linked={isInfoUserShown.is_linked}
+          setIsLinkedUserOpen={setIsLinkUserOpen}
           setIsDeleteUserOpen={setIsDeleteUserOpen}
+          setIsUnLinkedUserOpen={setIsUnLinkUserOpen}
           onOpenChange={() => setIsInfoUserShown(false)}
           onButtonsClick={async (setModalOpen, value) => {
             setIsInfoUserShown(false);
@@ -214,7 +217,7 @@ export function UsersList() {
             setModalOpen(value);
           }}
         />
-      )} */}
+      )}
 
       {isLinkUserOpen && (
         <LinkUserForm
@@ -238,7 +241,7 @@ export function UsersList() {
           }}
         />
       )}
-      {/* {isDeleteUserOpen && (
+      {isDeleteUserOpen && (
         <DeleteUserForm
           user={isDeleteUserOpen}
           open={!!isDeleteUserOpen}
@@ -249,7 +252,7 @@ export function UsersList() {
             refreshUsers();
           }}
         />
-      )} */}
+      )}
 
       <DeleteUsersByBatchForm
         selectedIds={selectedUserIds}

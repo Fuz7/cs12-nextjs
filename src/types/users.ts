@@ -27,20 +27,3 @@ export interface PaginatedUserResponse {
   to: number;
   total: number;
 }
-
-export const INVOICE_STATUSES = [
-  {
-    value: "draft",
-    label: "Draft",
-    color: "bg-blue-100 text-blue-800",
-    hover: "hover:bg-blue-100/90 hover:text-blue-800/90",
-    entry: [""],
-  },
-  {
-    value: "sent",
-    label: "Sent",
-    color: "bg-yellow-100 text-yellow-800",
-    hover: "hover:bg-yellow-100/90 hover:text-yellow-800/90",
-    entry: ["draft"],
-  },
-];

@@ -10,22 +10,22 @@ import {
   DialogHeader,
   DialogTitle,
 } from "../ui/dialog";
-import { deleteInvoices } from "@/services/invoices";
-type DeleteInvoicesProps = {
+import { deleteUsers } from "@/services/users";
+type DeleteUsersProps = {
   selectedIds?: Set<string>;
   onSuccess: () => void;
   open: boolean;
   onOpenChange: (open: boolean) => void;
 };
 
-export default function DeleteInvoicesByBatchForm({
+export default function DeleteUsersByBatchForm({
 
   selectedIds,
   onSuccess,
   open,
   onOpenChange,
-}: DeleteInvoicesProps) {
-  const invoiceToDelete = selectedIds || new Set<string>();
+}: DeleteUsersProps) {
+  const userToDelete = selectedIds || new Set<string>();
   const [isDeleting, setIsDeleting] = useState(false);
 
   const handleDelete = async (e: React.FormEvent) => {
@@ -33,26 +33,26 @@ export default function DeleteInvoicesByBatchForm({
     setIsDeleting(true);
 
     try {
-      // Create invoice with proper error handling
-      const response = await deleteInvoices(invoiceToDelete);
+      // Create user with proper error handling
+      const response = await deleteUsers(userToDelete);
 
       if (response.status === "error") {
-        throw new Error(response.message || "Failed to delete invoice");
+        throw new Error(response.message || "Failed to delete user");
       }
 
       // Optimistacally Update
 
-      // Success! The invoice was created
+      // Success! The user was created
       toast.success("Estimate deleted successfully");
 
       // Close the modal and close the page
       onSuccess();
     } catch (error) {
-      console.error("Error deleting invoice:", error);
+      console.error("Error deleting user:", error);
       toast.error(
         typeof error === "object" && error !== null && "message" in error
           ? String(error.message)
-          : "Failed to delete invoice. Please try again."
+          : "Failed to delete user. Please try again."
       );
     } finally {
       setIsDeleting(false);
@@ -64,12 +64,12 @@ export default function DeleteInvoicesByBatchForm({
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
-            Delete {invoiceToDelete.size}{" "}
-            {invoiceToDelete.size > 1 ? "invoices" : "invoice"}?
+            Delete {userToDelete.size}{" "}
+            {userToDelete.size > 1 ? "users" : "user"}?
           </DialogTitle>
           <DialogDescription>
             This action cannot be undone. This will permanently delete the
-            invoice and remove the data from our servers.
+            user and remove the data from our servers.
           </DialogDescription>
         </DialogHeader>
         <DialogFooter>
