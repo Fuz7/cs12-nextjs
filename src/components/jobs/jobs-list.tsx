@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Edit, Trash2 } from "lucide-react";
+import { Edit, Search, Trash2 } from "lucide-react";
 import {
   DataTableV2,
   type DataTableColumn,
@@ -16,11 +16,11 @@ import { useJobs } from "@/hooks/useJobs";
 import { formatToPHDate } from "@/utils/date";
 import { AddJobForm } from "./add-job-form";
 import { wait } from "@/utils/promise";
-import SearchCustomerForm from "../estimates/search-customer-form";
 import { EditJobForm } from "./edit-job-form";
 import DeleteJobForm from "./delete-job-form";
 import DeleteJobsByBatchForm from "./batch-delete-job";
 import { InfoJob } from "./info-job";
+import SearchCustomerForm from "../customers/search-customer-form";
 
 export function JobsList() {
   const {
@@ -190,7 +190,6 @@ export function JobsList() {
             await wait(200);
             setIsAddJobOpen(customer);
           }}
-          label="job"
         />
       )}
       {isAddJobOpen && (

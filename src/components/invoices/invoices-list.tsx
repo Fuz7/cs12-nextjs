@@ -14,13 +14,13 @@ import { wait } from "@/utils/promise";
 import { currencyCharacter, Customer } from "@/types/database";
 import { useInvoices } from "@/hooks/useInvoice";
 import { Invoice, INVOICE_STATUSES } from "@/types/invoices";
-import SearchCustomerForm from "../estimates/search-customer-form";
 import { formatToPHDate } from "@/utils/date";
 import { AddInvoiceForm } from "./add-invoice-form";
 import { EditInvoiceForm } from "./edit-invoice-form";
 import DeleteInvoiceForm from "./delete-invoice-form";
 import DeleteInvoicesByBatchForm from "./batch-delete-invoice";
 import { InfoInvoice } from "./info-invoice";
+import SearchCustomerForm from "../customers/search-customer-form";
 export function InvoicesList() {
   const {
     invoice,
@@ -238,7 +238,6 @@ export function InvoicesList() {
             await wait(200);
             setIsAddInvoiceOpen(customer);
           }}
-          label="invoice"
         />
       )}
       {isAddInvoiceOpen && (

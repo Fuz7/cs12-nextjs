@@ -1,7 +1,7 @@
 import { useState, useCallback, useEffect } from "react";
 import { Customer } from "@/types/database";
 import { useDebounce } from "./useDebounce";
-import { getCustomersByPagination, getUnlinkedCustomers, searchCustomer } from "@/services/customers";
+import { getCustomers, getCustomersByPagination, getUnlinkedCustomers, searchCustomer } from "@/services/customers";
 import toast from "react-hot-toast";
 
 export type SortableTableColumn = {
@@ -104,6 +104,28 @@ export function useCustomers() {
     }
   }, []);
 
+
+  // This function is for fetching customer without pagination
+  const fetchCustomers = useCallback(async () => {
+    try {
+      const response = await getCustomers();
+
+      if (
+        response.status === "success" &&
+        Object.keys(response.data as object).length !== 0
+      ) {
+        return response.data as Customer[];
+      } else {
+        return null;
+      }
+    } catch (err) {
+      const errorMessage =
+        err instanceof Error ? err.message : "An error occurred";
+      toast.error(errorMessage);
+      return null;
+    }
+  }, []);
+
   // Refresh function that can be called from outside
   const refresh = useCallback(() => {
     return fetchData(false); // Show loading indicator on manual refresh
@@ -163,6 +185,7 @@ export function useCustomers() {
     setSearchTerm,
     refresh,
     handleSearchCustomer,
-    fetchUnlinkedCustomer
+    fetchUnlinkedCustomer,
+    fetchCustomers
   };
 }

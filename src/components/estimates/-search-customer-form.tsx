@@ -20,7 +20,7 @@ interface ConvertLeadFormProps {
   onSuccess: (customer: Customer) => void;
   label:string,
 }
-export default function SearchCustomerForm({
+export default function SearchCustomerForm_({
   open,
   onOpenChange,
   onSuccess,

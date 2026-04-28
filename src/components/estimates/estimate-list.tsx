@@ -12,7 +12,6 @@ import { Badge } from "@/components/ui/badge";
 import { useEstimates } from "@/hooks/useEstimates";
 import { Estimate, ESTIMATE_STATUSES } from "@/types/estimates";
 import Link from "next/link";
-import SearchCustomerForm from "./search-customer-form";
 import { currencyCharacter, Customer } from "@/types/database";
 import { AddEstimateForm } from "./add-estimate-form";
 import { wait } from "@/utils/promise";
@@ -21,6 +20,7 @@ import DeleteEstimateForm from "./delete-estimate-form";
 import DeleteEstimatesByBatchForm from "./batch-delete-estimate-form";
 import { InfoEstimate } from "./info-estimate";
 import ApproveEstimateForm from "./approve-estimate-form";
+import SearchCustomerForm from "../customers/search-customer-form";
 
 export function EstimatesList() {
   const {
@@ -214,7 +214,6 @@ export function EstimatesList() {
             await wait(200);
             setIsAddEstimateOpen(customer);
           }}
-          label="estimate"
         />
       )}
       {isAddEstimateOpen && (

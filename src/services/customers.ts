@@ -166,3 +166,21 @@ export async function getUnlinkedCustomers(
     status: "success",
   });
 }
+
+export async function getCustomers(
+): Promise<JsonResponse<Customer[] | []>> {
+  const res = await axios.get(`/api/customers/all`);
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: [],
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}
+
+
