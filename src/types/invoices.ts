@@ -88,3 +88,8 @@ export const INVOICE_STATUSES = [
     entry: ["sent", "partially_paid"],
   },
 ];
+
+export type InvoiceChartItem = {
+  day: string;        // YYYY-MM-DD
+  total_paid: number;
+};

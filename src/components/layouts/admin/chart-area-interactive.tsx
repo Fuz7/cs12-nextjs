@@ -29,6 +29,9 @@ import { ChartLead } from "@/services/leads";
 import { Button } from "@/components/ui/button";
 import { Download } from "lucide-react";
 import { CSVLink } from "react-csv";
+import { DownloadPeriodModal } from "./download-period-modal";
+import { InvoiceChartItem } from "@/types/invoices";
+import * as XLSX from "xlsx";
 export const description = "An interactive area chart";
 
 const chartConfig = {
@@ -84,8 +87,10 @@ const chartConfig = {
 
 export function ChartAreaInteractive({
   chartLead,
+  invoiceChartData,
 }: {
   chartLead: ChartLead[] | null;
+  invoiceChartData: InvoiceChartItem[] | null;
 }) {
   const isMobile = useIsMobile();
   const [timeRange, setTimeRange] = React.useState("90");
@@ -101,7 +106,7 @@ export function ChartAreaInteractive({
 
     // find latest day in data
     const referenceDate = new Date(
-      Math.max(...chartData.map((d) => new Date(d.day).getTime()))
+      Math.max(...chartData.map((d) => new Date(d.day).getTime())),
     );
 
     const startDate = new Date(referenceDate);
@@ -238,8 +243,8 @@ export function ChartAreaInteractive({
                   // Define colors per source
                   const sourceColors = Object.fromEntries(
                     Object.entries(chartConfig).map(
-                      ([key, { label, color }]) => [key, { label, color }]
-                    )
+                      ([key, { label, color }]) => [key, { label, color }],
+                    ),
                   ) as Record<string, { label: string; color: string }>;
                   return (
                     <div className="rounded-lg border bg-white p-2 shadow-md">
@@ -290,29 +295,27 @@ export function ChartAreaInteractive({
           </ChartContainer>
         </CardContent>
       </Card>
-      <DownloadButton chartLead={chartLead} />
+      <DownloadButton
+        chartLead={chartLead}
+        invoiceChartData={invoiceChartData}
+      />
     </>
   );
 }
 
 interface CSVLinkRef extends HTMLAnchorElement {
   link: HTMLAnchorElement | null;
+  invoiceChartData: InvoiceChartItem[] | null;
 }
-function DownloadButton({ chartLead }: { chartLead: ChartLead[] }) {
-  const csvLinkRef = React.useRef<CSVLinkRef | null>(null);
-  const csvHeaders = [
-    { key: "date", label: "Date" },
-    { key: "advertisement", label: "Advertisement" },
-    { key: "coldOutreach", label: "Cold Outreach" },
-    { key: "emailCampaign", label: "Email Campaign" },
-    { key: "phoneCall", label: "Phone Call" },
-    { key: "referral", label: "Referral" },
-    { key: "socialMedia", label: "Social Media" },
-    { key: "tradeShow", label: "Trade Show" },
-    { key: "website", label: "Website" },
-    { key: "other", label: "Other" },
-    { key: "total", label: "Total" },
-  ];
+function DownloadButton({
+  chartLead,
+  invoiceChartData,
+}: {
+  chartLead: ChartLead[];
+  invoiceChartData: InvoiceChartItem[] | null;
+}) {
+  const [isModalShown, setIsModalShown] = React.useState(false);
+  console.log(invoiceChartData)
   const filteredData = React.useMemo(() => {
     return chartLead.map((lead) => {
       return {
@@ -332,23 +335,77 @@ function DownloadButton({ chartLead }: { chartLead: ChartLead[] }) {
   }, [chartLead]);
   console.log(filteredData);
   return (
-    <Button
-      variant={"default"}
-      type="button"
-      className=" ml-auto shadow-2xs text-md
+    <>
+      {isModalShown && (
+        <DownloadPeriodModal
+          isOpen={isModalShown}
+          title="Download"
+          onClose={() => setIsModalShown(false)}
+          onDownload={(period) => {
+            // Optional: filter by period
+            if (!invoiceChartData || !invoiceChartData.length) return;
+            let dataToExport = invoiceChartData;
+
+            if (period === "1month") {
+              const oneMonthAgo = new Date();
+              oneMonthAgo.setMonth(oneMonthAgo.getMonth() - 1);
+
+              dataToExport = invoiceChartData.filter((item) => {
+                return new Date(item.day) >= oneMonthAgo;
+              });
+            } else if (period === "3months") {
+              const threeMonthAgo = new Date();
+              threeMonthAgo.setMonth(threeMonthAgo.getMonth() - 3);
+
+              dataToExport = invoiceChartData.filter((item) => {
+                return new Date(item.day) >= threeMonthAgo;
+              });
+            } else if (period === "1year") {
+              const oneYearAgo = new Date();
+              oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
+
+              dataToExport = invoiceChartData.filter((item) => {
+                return new Date(item.day) >= oneYearAgo;
+              });
+            }
+            // Map to only needed fields
+            const formattedData = dataToExport.map((item) => ({
+              date: item.day,
+              total_paid: item.total_paid,
+            }));
+
+            // Create worksheet
+            const worksheet = XLSX.utils.json_to_sheet(formattedData, {
+              header: ["date", "total_paid"],
+            });
+
+            // Optional: Rename headers (nicer Excel labels)
+            XLSX.utils.sheet_add_aoa(worksheet, [["Date", "Total Paid"]], {
+              origin: "A1",
+            });
+
+            // Create workbook
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(
+              workbook,
+              worksheet,
+              "Invoice Revenue",
+            );
+
+            // Download
+            XLSX.writeFile(workbook, "invoice-revenue.xlsx");
+          }}
+        />
+      )}
+      <Button
+        variant={"default"}
+        type="button"
+        className=" ml-auto shadow-2xs text-md
         shadow-accent border border-accent"
-      onClick={()=>csvLinkRef.current?.link?.click()}
-    >
-      <Download className="size-5" />
-      Download
-      <CSVLink
-        ref={csvLinkRef}
-        className="hidden"
-        headers={csvHeaders}
-        filename="analyticsData.csv"
-        data={filteredData}
-        target="_blank"
-      ></CSVLink>
-    </Button>
+        onClick={() => setIsModalShown(true)}
+      >
+        Download
+      </Button>
+    </>
   );
 }

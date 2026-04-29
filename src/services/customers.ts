@@ -169,7 +169,7 @@ export async function getUnlinkedCustomers(
 
 export async function getCustomers(
 ): Promise<JsonResponse<Customer[] | []>> {
-  const res = await axios.get(`/api/customers/all`);
+  const res = await axios.get(`/api/customers/all/fetch`);
   if (res.status !== 200) {
     return jsonResponse({
       data: [],
