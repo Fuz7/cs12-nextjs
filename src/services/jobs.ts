@@ -125,3 +125,21 @@ export async function deleteJobs(
     status: "success",
   });
 }
+
+export async function getActiveJobsByUserId(
+  id: number,
+): Promise<JsonResponse<Job[] | null>> {
+  const res = await axios.get(`/api/jobs/user/${id}`);
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to fetch jobs",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}
+

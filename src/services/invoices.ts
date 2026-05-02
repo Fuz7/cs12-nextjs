@@ -178,3 +178,20 @@ export async function getChartInvoiceRevenue(
     status: "success",
   });
 }
+
+export async function getInvoicesByUserId(
+  id: number,
+): Promise<JsonResponse<Invoice[] | null>> {
+  const res = await axios.get(`/api/invoices/user/${id}`, {});
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}

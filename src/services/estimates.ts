@@ -12,7 +12,7 @@ export async function getEstimatesByPagination(
   activePage: number,
   perPage: number,
   sortConfig: SortableEstimateColumn[] | [],
-  searchTerm: string
+  searchTerm: string,
 ): Promise<JsonResponse<PaginatedEstimateResponse | null>> {
   const sortBy = sortConfig.length > 0 ? sortConfig[0].key : "created_at";
   const orderBy = sortConfig.length > 0 ? sortConfig[0].sortBy : "desc";
@@ -42,7 +42,7 @@ export async function getEstimatesByPagination(
 
 export async function createEstimate(
   formData: EstimateAdd,
-  customerId: number
+  customerId: number,
 ) {
   const res = await axios.post(`/api/estimates/${customerId}`, formData);
   if (res.status !== 200) {
@@ -62,7 +62,7 @@ export async function editEstimate(
   formData: EstimateAdd,
   customerId: number,
   estimateId: number,
-  deletedIds: number[] | []
+  deletedIds: number[] | [],
 ) {
   const res = await axios.patch(`/api/estimates/${customerId}/${estimateId}`, {
     ...formData,
@@ -95,7 +95,7 @@ export async function deleteEstimate(id: number): Promise<JsonResponse<null>> {
   });
 }
 export async function deleteEstimates(
-  ids: Set<string>
+  ids: Set<string>,
 ): Promise<JsonResponse<null>> {
   const res = await axios.delete(`/api/estimates`, {
     data: { ids: [...ids] },
@@ -115,7 +115,7 @@ export async function deleteEstimates(
 
 export async function getEstimatesById(
   id: number,
-  cookieHeader: string
+  cookieHeader: string,
 ): Promise<JsonResponse<Estimate[] | null>> {
   const res = await axiosServerSide.get(`/api/estimates/${id}`, {
     headers: { Cookie: cookieHeader, Referer: process.env.FRONTEND_URL },
@@ -133,9 +133,26 @@ export async function getEstimatesById(
   });
 }
 
+export async function getEstimatesByUserId(
+  id: number,
+): Promise<JsonResponse<Estimate[] | null>> {
+  const res = await axios.get(`/api/estimates/user/${id}`, {});
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to update customer",
+    });
+  }
+  return jsonResponse({
+    data: res.data,
+    status: "success",
+  });
+}
+
 export async function approveEstimate(
   estimateId: number,
-  due_date: string
+  due_date: string,
 ): Promise<JsonResponse<null>> {
   const res = await axios.patch(`/api/estimates/${estimateId}/approve`, {
     due_date,
@@ -152,3 +169,22 @@ export async function approveEstimate(
     status: "success",
   });
 }
+
+export async function rejectEstimate(
+  estimateId: number,
+): Promise<JsonResponse<null>> {
+  const res = await axios.patch(`/api/estimates/${estimateId}/reject`, {
+  });
+  if (res.status !== 200) {
+    return jsonResponse({
+      data: null,
+      status: "error",
+      message: "Failed to reject estimate",
+    });
+  }
+  return jsonResponse({
+    data: null,
+    status: "success",
+  });
+}
+

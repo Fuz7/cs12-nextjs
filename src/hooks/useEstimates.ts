@@ -7,16 +7,15 @@ import { useDebounce } from "./useDebounce";
 import {
   approveEstimate,
   getEstimatesByPagination,
+  rejectEstimate,
 } from "@/services/estimates";
-import { Estimate,  } from "@/types/estimates";
+import { Estimate } from "@/types/estimates";
 
 export interface SortableEstimateColumn {
   key: keyof Estimate;
   columnName: string;
   sortBy?: "asc" | "desc";
 }
-
-
 
 export const useEstimates = () => {
   const [estimate, setEstimate] = useState<Estimate[]>([]);
@@ -39,7 +38,7 @@ export const useEstimates = () => {
         currentPage,
         perPage,
         sortConfig,
-        debouncedSearchTerm
+        debouncedSearchTerm,
       );
 
       if (response.status === "success" && response.data) {
@@ -64,15 +63,9 @@ export const useEstimates = () => {
   }, [fetchEstimates]);
 
   const handleApproveEstimate = useCallback(
-    async (
-      estimateId: number,
-      due_date: string
-    ): Promise<boolean> => {
+    async (estimateId: number, due_date: string): Promise<boolean> => {
       try {
-        const response = await approveEstimate(
-          estimateId,
-          due_date
-        );
+        const response = await approveEstimate(estimateId, due_date);
 
         if (response.status === "success") {
           toast.success("Estimate approved successfully");
@@ -88,7 +81,29 @@ export const useEstimates = () => {
         return false;
       }
     },
-    []
+    [],
+  );
+
+  const handleRejectEstimate = useCallback(
+    async (estimateId: number): Promise<boolean> => {
+      try {
+        const response = await rejectEstimate(estimateId);
+
+        if (response.status === "success") {
+          toast.success("Estimate rejected successfully");
+          return true;
+        } else {
+          toast.error(response.message || "Failed to reject lead");
+          return false;
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "An error occurred";
+        toast.error(errorMessage);
+        return false;
+      }
+    },
+    [],
   );
 
   // Fetch leads when dependencies change
@@ -123,5 +138,6 @@ export const useEstimates = () => {
     refreshEstimates,
     setPerPage,
     handleApproveEstimate,
+    handleRejectEstimate,
   };
 };

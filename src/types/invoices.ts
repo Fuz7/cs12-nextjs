@@ -19,7 +19,7 @@ export type Invoice = {
   notes?: string;
   paid_amount: string;
   tasks: TaskFillable[];
-  tasks_total_price?: string;
+  tasks_total_price: string;
   site_address?: string;
   due_date: string;
   updated_at: Date;

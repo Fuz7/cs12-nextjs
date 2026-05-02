@@ -124,13 +124,13 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
 
     // If the user is authenticated and tries to access a admin page,
     // redirects them to user page
-    // if (
-    //   middleware === "auth" &&
-    //   user &&
-    //   user.role === "user"
-    // ) {
-    //   router.push("/user");
-    // }
+    if (
+      middleware === "auth" &&
+      user &&
+      user.role === "user"
+    ) {
+      router.push("/dashboard");
+    }
     if (
       middleware === "auth" &&
       user &&
@@ -139,6 +139,9 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
     ) {
       router.push("/verify");
     }
+      if (middleware === "auth" && user && user.role === "admin") {
+        router.push("/admin/dashboard")
+      }
 
     // if (
     //   middleware === "guest" &&
@@ -159,6 +162,9 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
     //     router.push(redirectIfAuthenticated)
     if (middleware === "guest" && user && user.role === "admin") {
       router.push("/admin/dashboard");
+    }
+        if (middleware === "guest" && user && user.role === "user" && user.is_linked === true) {
+      router.push("/dashboard");
     }
     if (
       middleware === "guest" &&

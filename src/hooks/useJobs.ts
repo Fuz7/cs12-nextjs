@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useDebounce } from "./useDebounce";
 import { Job } from "@/types/jobs";
-import { getJobsByPagination } from "@/services/jobs";
+import { getJobsByPagination,getActiveJobsByUserId } from "@/services/jobs";
 
 export interface SortableJobColumn {
   key: keyof Job;
@@ -34,7 +34,7 @@ export const useJobs = () => {
         currentPage,
         perPage,
         sortConfig,
-        debouncedSearchTerm
+        debouncedSearchTerm,
       );
 
       if (response.status === "success" && response.data) {
@@ -47,8 +47,8 @@ export const useJobs = () => {
     } catch (err) {
       const errorMessage =
         typeof err === "object" && err !== null && "message" in err
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ? (err as any).message
+          ? // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            (err as any).message
           : "An error occurred";
       setError(errorMessage);
       toast.error(errorMessage);
@@ -72,7 +72,28 @@ export const useJobs = () => {
       setCurrentPage(1);
     }
   }, [debouncedSearchTerm]);
+  
+  const fetchActiveJobsByUserId = useCallback(
+    async (userId: number): Promise<boolean> => {
+      try {
+        const response = await getActiveJobsByUserId(userId);
 
+        if (response.status === "success") {
+          toast.success("Jobs fetched successfully");
+          return true;
+        } else {
+          toast.error(response.message || "Failed to fetch jobs");
+          return false;
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "An error occurred";
+        toast.error(errorMessage);
+        return false;
+      }
+    },
+    [],
+  );
   return {
     job,
     loading,
@@ -92,5 +113,6 @@ export const useJobs = () => {
     setSelectedRows,
     refreshJobs,
     setPerPage,
+    fetchActiveJobsByUserId
   };
 };

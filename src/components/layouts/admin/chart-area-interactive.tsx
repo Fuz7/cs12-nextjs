@@ -315,7 +315,7 @@ function DownloadButton({
   invoiceChartData: InvoiceChartItem[] | null;
 }) {
   const [isModalShown, setIsModalShown] = React.useState(false);
-  console.log(invoiceChartData)
+  console.log(invoiceChartData);
   const filteredData = React.useMemo(() => {
     return chartLead.map((lead) => {
       return {
@@ -342,8 +342,8 @@ function DownloadButton({
           title="Download"
           onClose={() => setIsModalShown(false)}
           onDownload={(period) => {
-            // Optional: filter by period
             if (!invoiceChartData || !invoiceChartData.length) return;
+
             let dataToExport = invoiceChartData;
 
             if (period === "1month") {
@@ -368,23 +368,37 @@ function DownloadButton({
                 return new Date(item.day) >= oneYearAgo;
               });
             }
-            // Map to only needed fields
+
             const formattedData = dataToExport.map((item) => ({
               date: item.day,
               total_paid: item.total_paid,
             }));
 
-            // Create worksheet
+            // ✅ Compute total
+            const total = formattedData.reduce(
+              (sum, item) => sum + Number(item.total_paid || 0),
+              0,
+            );
+
             const worksheet = XLSX.utils.json_to_sheet(formattedData, {
               header: ["date", "total_paid"],
             });
 
-            // Optional: Rename headers (nicer Excel labels)
+            // Rename headers
             XLSX.utils.sheet_add_aoa(worksheet, [["Date", "Total Paid"]], {
               origin: "A1",
             });
 
-            // Create workbook
+            // ✅ Add total row at the bottom
+            XLSX.utils.sheet_add_aoa(
+              worksheet,
+              [["Total", total]],
+              { origin: -1 }, // -1 means append to the end
+            );
+
+            // Optional: make columns wider
+            worksheet["!cols"] = [{ wch: 20 }, { wch: 20 }];
+
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(
               workbook,
@@ -392,7 +406,6 @@ function DownloadButton({
               "Invoice Revenue",
             );
 
-            // Download
             XLSX.writeFile(workbook, "invoice-revenue.xlsx");
           }}
         />

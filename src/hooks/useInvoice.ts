@@ -5,7 +5,7 @@ import { useState, useEffect, useCallback } from "react";
 import toast from "react-hot-toast";
 import { useDebounce } from "./useDebounce";
 import { Invoice } from "@/types/invoices";
-import { getInvoicesByPagination } from "@/services/invoices";
+import { getInvoicesByPagination, getInvoicesByUserId } from "@/services/invoices";
 
 export interface SortableInvoiceColumn {
   key: keyof Invoice;
@@ -69,6 +69,28 @@ export const useInvoices = () => {
       setCurrentPage(1);
     }
   }, [debouncedSearchTerm]);
+
+  const fetchInvoicesByUserId = useCallback(
+    async (userId: number): Promise<boolean> => {
+      try {
+        const response = await getInvoicesByUserId(userId);
+
+        if (response.status === "success") {
+          toast.success("Invoices fetched successfully");
+          return true;
+        } else {
+          toast.error(response.message || "Failed to fetch invoices");
+          return false;
+        }
+      } catch (err) {
+        const errorMessage =
+          err instanceof Error ? err.message : "An error occurred";
+        toast.error(errorMessage);
+        return false;
+      }
+    },
+    []
+  );
 
   return {
     invoice,
