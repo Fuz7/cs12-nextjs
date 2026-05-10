@@ -12,6 +12,8 @@ RUN npm install
 # Copy app files
 COPY . .
 
+RUN chmod -R +x node_modules/.bin
+
 # Expose Next.js port
 EXPOSE 3000
 

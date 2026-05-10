@@ -41,7 +41,7 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
     setErrors([]);
 
     axios
-      .post("/register", props)
+      .post("/api/register", props)
       .then(() => mutate())
       .catch((error) => {
         if (error.response.status !== 422) throw error;
@@ -53,17 +53,15 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
   const login = async ({ setErrors, setStatus, ...props }) => {
     await csrf();
 
-    setErrors([]);
     setStatus(null);
 
-    axios
-      .post("/login", props)
+    return await axios
+      .post("/api/login", props)
       .then(() => mutate())
       .catch((error) => {
         console.log(error);
-        if (error.response.status !== 422) throw error;
-
-        setErrors(error.response.data.errors);
+  
+        return error.errors;
       });
   };
 
@@ -109,7 +107,7 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
 
   const logout = async () => {
     if (!error) {
-      await axios.post("/logout").then(() => mutate());
+      await axios.post("/api/logout").then(() => mutate());
     }
 
     window.location.pathname = "/";
@@ -124,11 +122,7 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
 
     // If the user is authenticated and tries to access a admin page,
     // redirects them to user page
-    if (
-      middleware === "auth" &&
-      user &&
-      user.role === "user"
-    ) {
+    if (middleware === "auth" && user && user.role === "user") {
       router.push("/dashboard");
     }
     if (
@@ -139,9 +133,9 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
     ) {
       router.push("/verify");
     }
-      if (middleware === "auth" && user && user.role === "admin") {
-        router.push("/admin/dashboard")
-      }
+    if (middleware === "auth" && user && user.role === "admin") {
+      router.push("/admin/dashboard");
+    }
 
     // if (
     //   middleware === "guest" &&
@@ -163,7 +157,12 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
     if (middleware === "guest" && user && user.role === "admin") {
       router.push("/admin/dashboard");
     }
-        if (middleware === "guest" && user && user.role === "user" && user.is_linked === true) {
+    if (
+      middleware === "guest" &&
+      user &&
+      user.role === "user" &&
+      user.is_linked === true
+    ) {
       router.push("/dashboard");
     }
     if (

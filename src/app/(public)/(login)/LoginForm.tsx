@@ -31,7 +31,7 @@ export default function LoginForm() {
     rememberMe: false,
   });
   const [errors, setErrors] = useState<Record<string, string[]>>({});
-  const [status,setStatus] = useState(null)
+  const [status, setStatus] = useState(null);
   // Handle input changes
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value, type, checked } = e.target;
@@ -44,21 +44,22 @@ export default function LoginForm() {
   const SubmitForm = async (event: FormEvent) => {
     event.preventDefault();
     setLoading(true);
-    await login({
+    setErrors({})
+    const error = await login({
       email: formData.email,
       password: formData.password,
-      remember:formData.rememberMe,
-      setErrors,
-      setStatus
+      remember: formData.rememberMe,
+      setErrors: setErrors,
+      setStatus,
     });
     setLoading(false);
+    setErrors(error || {})
   };
-
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);
   };
-
+  console.log(errors);
   return (
     <div
       className="min-h-screen 
@@ -75,11 +76,15 @@ export default function LoginForm() {
         <div className="absolute bottom-20 right-1/4 w-64 h-64 bg-primary/5 rounded-full blur-3xl animate-pulse"></div>
       </div>
 
-      <Card className="w-full max-w-sm rounded-lg border-0 gap-3
+      <Card
+        className="w-full max-w-sm rounded-lg border-0 gap-3
        bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl
-        shadow-xl shadow-primary/10 overflow-hidden">
-        <div className="absolute top-0 left-0 right-0 h-1.5
-         bg-gradient-to-r from-primary/80 via-primary to-primary/80"></div>
+        shadow-xl shadow-primary/10 overflow-hidden"
+      >
+        <div
+          className="absolute top-0 left-0 right-0 h-1.5
+         bg-gradient-to-r from-primary/80 via-primary to-primary/80"
+        ></div>
 
         <CardHeader className="pb-2 pt-8 text-center">
           <div className="flex flex-col items-center justify-center gap-3">
@@ -103,16 +108,20 @@ export default function LoginForm() {
         </CardHeader>
 
         <CardContent className="px-6 pb-8 pt-2">
-          {errors && Object.keys(errors).length > 0 && (
-            <div className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-300
+          {errors?.email && (
+            <div
+              className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-300
              text-xs px-4 py-3 mb-4 rounded-xl flex items-center
-              gap-2 ">
+              gap-2 "
+            >
               <CircleAlert size={16} />
-              {errors[Object.keys(errors)[0]][0]}
+              {errors.email
+                ? errors.email
+                : "An error occurred. Please try again."}
             </div>
           )}
 
-          <form onSubmit={SubmitForm} className="space-y-5">
+          <form method="post" onSubmit={SubmitForm} className="space-y-5">
             <div className="relative group">
               <Mail className="absolute left-4 top-1/2 -translate-y-1/2 h-[18px] w-[18px] text-slate-400 group-focus-within:text-primary transition-colors duration-200" />
               <Input
@@ -177,7 +186,7 @@ export default function LoginForm() {
                       "dark:bg-slate-800/50 z-10",
                       "border border-slate-200",
                       "dark:border-slate-700/50 flex items-center justify-center",
-                      formData.rememberMe && "bg-primary border-primary"
+                      formData.rememberMe && "bg-primary border-primary",
                     )}
                   >
                     {formData.rememberMe && <Check size={12} color="white" />}
@@ -200,7 +209,7 @@ export default function LoginForm() {
                   className={cn(
                     "h-4 w-4",
                     "group-hover:translate-x-1 transition-transform",
-                    loading && "hidden"
+                    loading && "hidden",
                   )}
                 />
               </div>
