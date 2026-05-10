@@ -160,23 +160,30 @@ export async function getLastMonthRevenue(
 export async function getChartInvoiceRevenue(
   cookieHeader: string,
 ): Promise<JsonResponse<InvoiceChartItem[] | null>> {
-  const res = await axiosServerSide.get(
-    `/api/invoices/analytics/getChartInvoiceRevenue`,
-    {
-      headers: { Cookie: cookieHeader, Referer: process.env.FRONTEND_URL },
-    },
-  );
-  if (res.status !== 200) {
+  try {
+    const res = await axiosServerSide.get(
+      `/api/invoices/analytics/getChartInvoiceRevenue`,
+      {
+        headers: {
+          Cookie: cookieHeader ?? "",
+          Referer: process.env.FRONTEND_URL,
+        },
+      },
+    );
+
+    return jsonResponse({
+      data: res.data,
+      status: "success",
+    });
+  } catch (error) {
+    console.error("Error fetching invoice revenue chart:", error);
+
     return jsonResponse({
       data: null,
       status: "error",
-      message: "Failed to update customer",
+      message: "Failed to fetch invoice revenue chart",
     });
   }
-  return jsonResponse({
-    data: res.data,
-    status: "success",
-  });
 }
 
 export async function getInvoicesByUserId(

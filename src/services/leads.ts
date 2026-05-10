@@ -189,18 +189,29 @@ export type ChartLead = {
 export async function getChartLeadGeneration(
   cookieHeader: string
 ): Promise<JsonResponse<ChartLead[] | null>> {
-  const res = await axiosServerSide.get(`/api/leads/analytics/getChartLeadGeneration`, {
-    headers: { Cookie: cookieHeader, Referer: process.env.FRONTEND_URL },
-  });
-  if (res.status !== 200) {
+ try {
+    const res = await axiosServerSide.get(
+      `/api/leads/analytics/getChartLeadGeneration`,
+      {
+        headers: {
+          Cookie: cookieHeader ?? "",
+          Referer: process.env.FRONTEND_URL,
+        },
+      },
+    );
+
+    return jsonResponse({
+      data: res.data,
+      status: "success",
+    });
+  } catch (error) {
+    console.error(error.message);
+
     return jsonResponse({
       data: null,
       status: "error",
-      message: "Failed to update customer",
+      message: "Failed to fetch chart lead generation",
     });
   }
-  return jsonResponse({
-    data: res.data,
-    status: "success",
-  });
 }
+
