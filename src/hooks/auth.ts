@@ -8,6 +8,9 @@ interface AuthOptions {
 }
 export interface User {
   id: number;
+  avatarUrl?:string;
+  firstName?:string;
+  lastName?:string
   name: string;
   email: string;
   email_verified_at: string | null;
@@ -25,6 +28,7 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
     data: user,
     error,
     mutate,
+    isLoading,
   } = useSWR<User>(
     "/api/user",
     () => axios.get("/api/user").then((res) => res.data),
@@ -114,68 +118,57 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
   };
 
   useEffect(() => {
-    console.log(user);
-    // if (middleware === "auth" && user.is_linked === false && !error){
-    //   router.push("/verify")
-    //   return
-    // }
 
-    // If the user is authenticated and tries to access a admin page,
-    // redirects them to user page
-    if (middleware === "auth" && user && user.role === "user") {
-      router.push("/dashboard");
+  console.log(user);
+
+  if (middleware === "auth") {
+    if (error) {
+      logout();
+      return;
     }
-    if (
-      middleware === "auth" &&
-      user &&
-      user.role === "user" &&
-      user.is_linked === false
-    ) {
+
+    if (!user) {
+      router.push("/");
+      return
+    };
+
+    // Check is_linked first before role-based redirect
+    if (user.role === "user" && user.is_linked === false) {
       router.push("/verify");
-    }
-    if (middleware === "auth" && user && user.role === "admin") {
-      router.push("/admin/dashboard");
+      return;
     }
 
-    // if (
-    //   middleware === "guest" &&
-    //   user &&
-    //   user.role === "user" &&
-    //   user.is_linked === true
-    // ) {
-    //   router.push("/admin");
-    // }
-
-    // if (middleware === 'auth' && (user && !user.email_verified_at))
-    //     router.push('/verify-email')
-
-    // if (
-    //     window.location.pathname === '/verify-email' &&
-    //     user?.email_verified_at
-    // )
-    //     router.push(redirectIfAuthenticated)
-    if (middleware === "guest" && user && user.role === "admin") {
-      router.push("/admin/dashboard");
-    }
-    if (
-      middleware === "guest" &&
-      user &&
-      user.role === "user" &&
-      user.is_linked === true
-    ) {
+    if (user.role === "user") {
       router.push("/dashboard");
+      return;
     }
-    if (
-      middleware === "guest" &&
-      user &&
-      user.role === "user" &&
-      user.is_linked === false
-    ) {
+
+    if (user.role === "admin") {
+      router.push("/admin/dashboard");
+      return;
+    }
+  }
+
+  if (middleware === "guest") {
+    if (!user) return;
+
+    if (user.role === "admin") {
+      router.push("/admin/dashboard");
+      return;
+    }
+
+    if (user.role === "user" && user.is_linked === false) {
       router.push("/verify");
+      return;
     }
-    if (middleware === "auth" && error) logout();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user, error]);
+
+    if (user.role === "user" && user.is_linked === true) {
+      router.push("/dashboard");
+      return;
+    }
+  }
+// eslint-disable-next-line react-hooks/exhaustive-deps
+}, [user, error])
 
   return {
     user,
@@ -185,5 +178,6 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
     resetPassword,
     resendEmailVerification,
     logout,
+    isLoading,
   };
 };

@@ -6,6 +6,8 @@ const axiosServerSide = Axios.create({
     process.env.INTERNAL_BACKEND_URL,
   headers: {
     "X-Requested-With": "XMLHttpRequest",
+    "Origin": process.env.FRONTEND_URL,
+    "Referer": process.env.FRONTEND_URL,
   },
   withCredentials: true,
   withXSRFToken: true,

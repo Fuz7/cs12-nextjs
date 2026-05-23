@@ -67,5 +67,5 @@ export const ESTIMATE_STATUSES = [
 
 export type EstimateAdd = Omit<
   Estimate,
-  "id" | "customer" | "created_at" | "updated_at"
+  "id" | "customer" | "created_at" | "updated_at" | "tasks_total_price"
 >;

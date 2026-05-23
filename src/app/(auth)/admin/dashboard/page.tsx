@@ -8,9 +8,10 @@ import {redirect} from 'next/navigation'
 export default async function Home() {
   const cookieHeader = (await headers()).get("cookie") ?? ""; // browser cookies
   const [chartLead,invoiceChartData] = await Promise.all([getChartLeadGeneration(cookieHeader),getChartInvoiceRevenue(cookieHeader)]);
-  if(chartLead.status !== "success" || invoiceChartData.status !== "success"){
-    redirect('/')
+  if(!chartLead){
+    return<></>
   }
+  console.log(chartLead)
   return (
     <>
       <SectionCards cookieHeader={cookieHeader} />

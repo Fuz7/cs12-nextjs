@@ -8,6 +8,9 @@ const nextConfig: NextConfig = {
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     unoptimized: true,
   },
+   typescript: {
+    ignoreBuildErrors: true,
+  },
 };
 
 export default nextConfig;

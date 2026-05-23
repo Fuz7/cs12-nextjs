@@ -42,7 +42,7 @@ export interface PaginatedInvoiceResponse {
 }
 export type InvoiceAdd = Omit<
   Invoice,
-  "id" | "customer" | "created_at" | "updated_at"
+  "id" | "customer" | "created_at" | "updated_at" | "tasks_total_price"
 >;
 export const INVOICE_STATUSES = [
   {
