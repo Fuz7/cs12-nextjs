@@ -108,14 +108,14 @@ export default function LoginForm() {
         </CardHeader>
 
         <CardContent className="px-6 pb-8 pt-2">
-          {errors?.email && (
+          {errors?.email?.length > 0 && (
             <div
               className="bg-red-50 dark:bg-red-950/30 text-red-600 dark:text-red-300
              text-xs px-4 py-3 mb-4 rounded-xl flex items-center
               gap-2 "
             >
               <CircleAlert size={16} />
-              {errors.email
+              {errors.email.length > 0
                 ? errors.email
                 : "An error occurred. Please try again."}
             </div>

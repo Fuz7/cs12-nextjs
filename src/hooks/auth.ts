@@ -8,9 +8,9 @@ interface AuthOptions {
 }
 export interface User {
   id: number;
-  avatarUrl?:string;
-  firstName?:string;
-  lastName?:string
+  avatarUrl?: string;
+  firstName?: string;
+  lastName?: string;
   name: string;
   email: string;
   email_verified_at: string | null;
@@ -61,10 +61,13 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
 
     return await axios
       .post("/api/login", props)
-      .then(() => mutate())
+      .then(() => {
+        mutate();
+        return null;
+      })
       .catch((error) => {
         console.log(error);
-  
+
         return error.errors;
       });
   };
@@ -118,57 +121,56 @@ export const useAuth = ({ middleware }: AuthOptions = {}) => {
   };
 
   useEffect(() => {
+    console.log(user);
 
-  console.log(user);
+    if (middleware === "auth") {
+      if (error) {
+        logout();
+        return;
+      }
 
-  if (middleware === "auth") {
-    if (error) {
-      logout();
-      return;
+      if (!user) {
+        router.push("/");
+        return;
+      }
+
+      // Check is_linked first before role-based redirect
+      if (user.role === "user" && user.is_linked === false) {
+        router.push("/verify");
+        return;
+      }
+
+      if (user.role === "user") {
+        router.push("/dashboard");
+        return;
+      }
+
+      if (user.role === "admin") {
+        router.push("/admin/dashboard");
+        return;
+      }
     }
 
-    if (!user) {
-      router.push("/");
-      return
-    };
+    if (middleware === "guest") {
+      if (!user) return;
 
-    // Check is_linked first before role-based redirect
-    if (user.role === "user" && user.is_linked === false) {
-      router.push("/verify");
-      return;
+      if (user.role === "admin") {
+        router.push("/admin/dashboard");
+        return;
+      }
+
+      if (user.role === "user" && user.is_linked === false) {
+        router.push("/verify");
+        return;
+      }
+
+      if (user.role === "user" && user.is_linked === true) {
+        router.push("/dashboard");
+        return;
+      }
     }
-
-    if (user.role === "user") {
-      router.push("/dashboard");
-      return;
-    }
-
-    if (user.role === "admin") {
-      router.push("/admin/dashboard");
-      return;
-    }
-  }
-
-  if (middleware === "guest") {
-    if (!user) return;
-
-    if (user.role === "admin") {
-      router.push("/admin/dashboard");
-      return;
-    }
-
-    if (user.role === "user" && user.is_linked === false) {
-      router.push("/verify");
-      return;
-    }
-
-    if (user.role === "user" && user.is_linked === true) {
-      router.push("/dashboard");
-      return;
-    }
-  }
-// eslint-disable-next-line react-hooks/exhaustive-deps
-}, [user, error])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user, error]);
 
   return {
     user,
